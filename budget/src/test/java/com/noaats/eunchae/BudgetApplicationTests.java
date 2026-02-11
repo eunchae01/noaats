@@ -1,4 +1,4 @@
-package com.noaats.budget;
+package com.noaats.eunchae;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
