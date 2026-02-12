@@ -195,7 +195,7 @@
     fetch('/api/expenses/category-summary?yearMonth=' + yearMonth)
         .then(res => res.json())
         .then(data => {
-            const colors = ['#F59E0B', '#3B82F6', '#EC4899', '#10B981', '#8B5CF6', '#EF4444', '#6366F1', '#9CA3AF'];
+            const colors = ['#E8725A', '#5B8DEF', '#9B6DD7', '#45B99C', '#E57BA6', '#F0A05A', '#4DABD5', '#8896AB'];
             const ctx = document.getElementById('categoryChart').getContext('2d');
             new Chart(ctx, {
                 type: 'doughnut',
@@ -204,20 +204,28 @@
                     datasets: [{
                         data: data.values,
                         backgroundColor: colors.slice(0, data.labels.length),
-                        borderWidth: 0,
-                        hoverOffset: 8
+                        borderWidth: 3,
+                        borderColor: '#FFFFFF',
+                        hoverOffset: 12,
+                        hoverBorderWidth: 0
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
-                    cutout: '65%',
+                    cutout: '68%',
+                    spacing: 2,
                     plugins: {
                         legend: {
                             position: 'right',
                             labels: { padding: 16, usePointStyle: true, pointStyleWidth: 10, font: { size: 12 } }
                         },
                         tooltip: {
+                            backgroundColor: 'rgba(27, 42, 74, 0.92)',
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 12 },
+                            padding: 12,
+                            cornerRadius: 10,
                             callbacks: {
                                 label: function(ctx) {
                                     const total = ctx.dataset.data.reduce((a, b) => a + b, 0);

@@ -181,6 +181,28 @@
         .then(res => res.json())
         .then(data => {
             const ctx = document.getElementById('budgetChart').getContext('2d');
+
+            // 그라데이션 생성 (예산 바)
+            const budgetGrad = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+            budgetGrad.addColorStop(0, 'rgba(96, 165, 250, 0.08)');
+            budgetGrad.addColorStop(1, 'rgba(96, 165, 250, 0.25)');
+
+            // 실제 지출 그라데이션 (상태별)
+            function makeActualGrad(ratio) {
+                const g = ctx.createLinearGradient(0, 0, ctx.canvas.width, 0);
+                if (ratio >= 1) {
+                    g.addColorStop(0, 'rgba(255, 107, 107, 0.5)');
+                    g.addColorStop(1, 'rgba(255, 107, 107, 0.85)');
+                } else if (ratio >= 0.8) {
+                    g.addColorStop(0, 'rgba(251, 146, 60, 0.45)');
+                    g.addColorStop(1, 'rgba(251, 146, 60, 0.8)');
+                } else {
+                    g.addColorStop(0, 'rgba(78, 205, 196, 0.4)');
+                    g.addColorStop(1, 'rgba(78, 205, 196, 0.75)');
+                }
+                return g;
+            }
+
             new Chart(ctx, {
                 type: 'bar',
                 data: {
@@ -189,21 +211,21 @@
                         {
                             label: '예산',
                             data: data.budgetValues,
-                            backgroundColor: 'rgba(74, 144, 217, 0.25)',
-                            borderColor: '#4A90D9',
+                            backgroundColor: budgetGrad,
+                            borderColor: 'rgba(96, 165, 250, 0.4)',
                             borderWidth: 1,
-                            borderRadius: 4
+                            borderRadius: 8,
+                            borderSkipped: false
                         },
                         {
                             label: '실제 지출',
                             data: data.actualValues,
                             backgroundColor: data.actualValues.map((v, i) => {
                                 const ratio = data.budgetValues[i] > 0 ? v / data.budgetValues[i] : 0;
-                                if (ratio >= 1) return 'rgba(220, 53, 69, 0.7)';
-                                if (ratio >= 0.8) return 'rgba(245, 158, 11, 0.7)';
-                                return 'rgba(40, 167, 69, 0.7)';
+                                return makeActualGrad(ratio);
                             }),
-                            borderRadius: 4
+                            borderRadius: 8,
+                            borderSkipped: false
                         }
                     ]
                 },
@@ -212,15 +234,18 @@
                     responsive: true,
                     maintainAspectRatio: false,
                     plugins: {
-                        legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 10 } },
+                        legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 10, padding: 16 } },
                         tooltip: {
+                            backgroundColor: 'rgba(27, 42, 74, 0.92)',
+                            padding: 12,
+                            cornerRadius: 10,
                             callbacks: {
                                 label: function(ctx) { return ' ' + ctx.dataset.label + ': ' + ctx.parsed.x.toLocaleString() + '원'; }
                             }
                         }
                     },
                     scales: {
-                        x: { ticks: { callback: v => (v/10000) + '만' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        x: { ticks: { callback: v => (v/10000) + '만' }, grid: { color: 'rgba(0,0,0,0.04)' } },
                         y: { grid: { display: false } }
                     }
                 }

@@ -85,7 +85,7 @@ public class ChartApiController {
 
         // datasets 구성
         List<Map<String, Object>> datasets = new ArrayList<>();
-        String[] colors = {"#F59E0B", "#3B82F6", "#EC4899", "#10B981", "#8B5CF6", "#EF4444", "#6366F1", "#9CA3AF"};
+        String[] colors = {"#E8725A", "#5B8DEF", "#9B6DD7", "#45B99C", "#E57BA6", "#F0A05A", "#4DABD5", "#8896AB"};
         int colorIdx = 0;
 
         for (ExpenseCategory cat : ExpenseCategory.values()) {

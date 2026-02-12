@@ -414,4 +414,14 @@ a:hover {
 .pagination .page-item.active .page-link {
     background-color: var(--accent);
     border-color: var(--accent);
+    color: #FFFFFF;
+}
+
+.pagination .page-link:focus {
+    color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(74, 144, 217, 0.15);
+}
+
+.pagination .page-item.active .page-link:focus {
+    color: #FFFFFF;
 }
