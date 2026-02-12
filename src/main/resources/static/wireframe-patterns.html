@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>소비 패턴 - 노아의 가계부</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ========== Navbar ========== -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="wireframe-dashboard.html">
+            <span class="brand-icon">💰</span> 노아의 가계부
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="wireframe-dashboard.html">
+                        <i class="bi bi-grid-1x2-fill me-1"></i>대시보드
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="wireframe-expenses.html">
+                        <i class="bi bi-receipt me-1"></i>지출 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="wireframe-budgets.html">
+                        <i class="bi bi-wallet2 me-1"></i>예산 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="wireframe-patterns.html">
+                        <i class="bi bi-graph-up me-1"></i>소비 패턴
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ========== Main Content ========== -->
+<main class="container py-4">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2><i class="bi bi-graph-up me-2"></i>소비 패턴</h2>
+        <p>최근 6개월간 소비 추이를 분석합니다</p>
+    </div>
+
+    <!-- Line Chart - Monthly Total -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-graph-up-arrow me-2"></i>월별 총지출 추이
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="height: 300px;">
+                <canvas id="monthlyTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stacked Bar Chart - Category Trend -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-bar-chart-steps me-2"></i>카테고리별 월별 지출
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="height: 350px;">
+                <canvas id="categoryTrendChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Month-over-Month Comparison Table -->
+    <div class="card">
+        <div class="card-header">
+            <i class="bi bi-arrow-left-right me-2"></i>전월 대비 변화
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table mb-0">
+                    <thead>
+                        <tr>
+                            <th>카테고리</th>
+                            <th class="text-end">전월 (1월)</th>
+                            <th class="text-end">이번달 (2월)</th>
+                            <th class="text-end">변화</th>
+                            <th class="text-center">추이</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="badge badge-category badge-food">식비</span></td>
+                            <td class="text-end amount">320,000원</td>
+                            <td class="text-end amount">360,000원</td>
+                            <td class="text-end amount amount-negative">+40,000원</td>
+                            <td class="text-center">
+                                <span class="text-danger"><i class="bi bi-arrow-up-circle-fill"></i> +12.5%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-category badge-transport">교통</span></td>
+                            <td class="text-end amount">130,000원</td>
+                            <td class="text-end amount">120,000원</td>
+                            <td class="text-end amount amount-positive">-10,000원</td>
+                            <td class="text-center">
+                                <span class="text-success"><i class="bi bi-arrow-down-circle-fill"></i> -7.7%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-category badge-entertainment">여가/오락</span></td>
+                            <td class="text-end amount">150,000원</td>
+                            <td class="text-end amount">180,000원</td>
+                            <td class="text-end amount amount-negative">+30,000원</td>
+                            <td class="text-center">
+                                <span class="text-danger"><i class="bi bi-arrow-up-circle-fill"></i> +20.0%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-category badge-housing">주거/통신</span></td>
+                            <td class="text-end amount">248,000원</td>
+                            <td class="text-end amount">250,000원</td>
+                            <td class="text-end amount">+2,000원</td>
+                            <td class="text-center">
+                                <span class="text-secondary"><i class="bi bi-dash-circle-fill"></i> +0.8%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-category badge-shopping">쇼핑</span></td>
+                            <td class="text-end amount">95,000원</td>
+                            <td class="text-end amount">170,000원</td>
+                            <td class="text-end amount amount-negative">+75,000원</td>
+                            <td class="text-center">
+                                <span class="text-danger"><i class="bi bi-arrow-up-circle-fill"></i> +78.9%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-category badge-health">의료/건강</span></td>
+                            <td class="text-end amount">30,000원</td>
+                            <td class="text-end amount">45,000원</td>
+                            <td class="text-end amount amount-negative">+15,000원</td>
+                            <td class="text-center">
+                                <span class="text-danger"><i class="bi bi-arrow-up-circle-fill"></i> +50.0%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-category badge-education">교육</span></td>
+                            <td class="text-end amount">33,000원</td>
+                            <td class="text-end amount">60,000원</td>
+                            <td class="text-end amount amount-negative">+27,000원</td>
+                            <td class="text-center">
+                                <span class="text-danger"><i class="bi bi-arrow-up-circle-fill"></i> +81.8%</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><span class="badge badge-category badge-other">기타</span></td>
+                            <td class="text-end amount">72,000원</td>
+                            <td class="text-end amount">49,500원</td>
+                            <td class="text-end amount amount-positive">-22,500원</td>
+                            <td class="text-center">
+                                <span class="text-success"><i class="bi bi-arrow-down-circle-fill"></i> -31.3%</span>
+                            </td>
+                        </tr>
+                        <!-- Total row -->
+                        <tr class="table-active fw-bold">
+                            <td>합계</td>
+                            <td class="text-end amount">1,078,000원</td>
+                            <td class="text-end amount">1,234,500원</td>
+                            <td class="text-end amount amount-negative">+156,500원</td>
+                            <td class="text-center">
+                                <span class="text-danger"><i class="bi bi-arrow-up-circle-fill"></i> +14.5%</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</main>
+
+<!-- ========== Footer ========== -->
+<footer class="footer">
+    <div class="container text-center">
+        <p class="mb-1">노아의 가계부 &copy; 2026</p>
+        <p class="mb-0">NoaATS Pre-Assignment Project</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+<script>
+    // Monthly Total Line Chart
+    const trendCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+    new Chart(trendCtx, {
+        type: 'line',
+        data: {
+            labels: ['2025년 9월', '2025년 10월', '2025년 11월', '2025년 12월', '2026년 1월', '2026년 2월'],
+            datasets: [{
+                label: '월별 총지출',
+                data: [980000, 1120000, 1050000, 1350000, 1078000, 1234500],
+                borderColor: '#4A90D9',
+                backgroundColor: 'rgba(74, 144, 217, 0.1)',
+                borderWidth: 3,
+                fill: true,
+                tension: 0.3,
+                pointRadius: 5,
+                pointBackgroundColor: '#4A90D9',
+                pointBorderColor: '#FFFFFF',
+                pointBorderWidth: 2,
+                pointHoverRadius: 7
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ' ' + context.parsed.y.toLocaleString() + '원';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: false,
+                    ticks: {
+                        callback: function(value) {
+                            return (value / 10000) + '만원';
+                        }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
+
+    // Category Stacked Bar Chart
+    const catCtx = document.getElementById('categoryTrendChart').getContext('2d');
+    const catColors = {
+        food: '#F59E0B', transport: '#3B82F6', entertainment: '#EC4899',
+        housing: '#10B981', shopping: '#8B5CF6', health: '#EF4444',
+        education: '#6366F1', other: '#9CA3AF'
+    };
+
+    new Chart(catCtx, {
+        type: 'bar',
+        data: {
+            labels: ['2025년 9월', '2025년 10월', '2025년 11월', '2025년 12월', '2026년 1월', '2026년 2월'],
+            datasets: [
+                { label: '식비', data: [280000, 310000, 290000, 380000, 320000, 360000], backgroundColor: catColors.food },
+                { label: '교통', data: [100000, 120000, 110000, 130000, 130000, 120000], backgroundColor: catColors.transport },
+                { label: '여가/오락', data: [120000, 150000, 130000, 200000, 150000, 180000], backgroundColor: catColors.entertainment },
+                { label: '주거/통신', data: [245000, 248000, 245000, 250000, 248000, 250000], backgroundColor: catColors.housing },
+                { label: '쇼핑', data: [80000, 120000, 100000, 180000, 95000, 170000], backgroundColor: catColors.shopping },
+                { label: '의료/건강', data: [25000, 32000, 45000, 20000, 30000, 45000], backgroundColor: catColors.health },
+                { label: '교육', data: [50000, 60000, 50000, 90000, 33000, 60000], backgroundColor: catColors.education },
+                { label: '기타', data: [80000, 80000, 80000, 100000, 72000, 49500], backgroundColor: catColors.other }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        pointStyleWidth: 10,
+                        font: { size: 11 },
+                        padding: 12
+                    }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return ` ${context.dataset.label}: ${context.parsed.y.toLocaleString()}원`;
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    stacked: true,
+                    grid: { display: false }
+                },
+                y: {
+                    stacked: true,
+                    ticks: {
+                        callback: function(value) {
+                            return (value / 10000) + '만원';
+                        }
+                    },
+                    grid: { color: 'rgba(0,0,0,0.05)' }
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>지출 관리 - 노아의 가계부</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+</head>
+<body>
+
+<!-- ========== Navbar ========== -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <a class="navbar-brand" href="wireframe-dashboard.html">
+            <span class="brand-icon">💰</span> 노아의 가계부
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="wireframe-dashboard.html">
+                        <i class="bi bi-grid-1x2-fill me-1"></i>대시보드
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" href="wireframe-expenses.html">
+                        <i class="bi bi-receipt me-1"></i>지출 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="wireframe-budgets.html">
+                        <i class="bi bi-wallet2 me-1"></i>예산 관리
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="wireframe-patterns.html">
+                        <i class="bi bi-graph-up me-1"></i>소비 패턴
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- ========== Main Content ========== -->
+<main class="container py-4">
+
+    <!-- Page Header -->
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2><i class="bi bi-receipt me-2"></i>지출 관리</h2>
+            <p>지출 내역을 기록하고 관리합니다</p>
+        </div>
+        <a href="wireframe-expense-form.html" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>지출 추가
+        </a>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">시작일</label>
+                    <input type="date" class="form-control" value="2026-02-01">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">종료일</label>
+                    <input type="date" class="form-control" value="2026-02-28">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">카테고리</label>
+                    <select class="form-select">
+                        <option value="">전체</option>
+                        <option>식비</option>
+                        <option>교통</option>
+                        <option>여가/오락</option>
+                        <option>주거/통신</option>
+                        <option>쇼핑</option>
+                        <option>의료/건강</option>
+                        <option>교육/자기개발</option>
+                        <option>기타</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i>검색
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+        <span class="text-secondary">총 <strong>47건</strong> | 합계 <strong class="amount">1,234,500원</strong></span>
+    </div>
+
+    <!-- Expenses Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>카테고리</th>
+                            <th>설명</th>
+                            <th>메모</th>
+                            <th class="text-end">금액</th>
+                            <th class="text-center" style="width: 120px;">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2026-02-12</td>
+                            <td><span class="badge badge-category badge-food">식비</span></td>
+                            <td>점심 식사 (회사 근처 식당)</td>
+                            <td class="text-muted small">동료와 한식</td>
+                            <td class="text-end amount">9,500원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-11</td>
+                            <td><span class="badge badge-category badge-transport">교통</span></td>
+                            <td>지하철 정기권 충전</td>
+                            <td class="text-muted small">1개월분</td>
+                            <td class="text-end amount">55,000원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-11</td>
+                            <td><span class="badge badge-category badge-entertainment">여가/오락</span></td>
+                            <td>넷플릭스 월정액</td>
+                            <td class="text-muted small">스탠다드 요금제</td>
+                            <td class="text-end amount">17,000원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-10</td>
+                            <td><span class="badge badge-category badge-shopping">쇼핑</span></td>
+                            <td>무선 이어폰 구매</td>
+                            <td class="text-muted small">갤럭시 버즈</td>
+                            <td class="text-end amount">89,000원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-10</td>
+                            <td><span class="badge badge-category badge-food">식비</span></td>
+                            <td>편의점 간식</td>
+                            <td class="text-muted small"></td>
+                            <td class="text-end amount">4,800원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-09</td>
+                            <td><span class="badge badge-category badge-housing">주거/통신</span></td>
+                            <td>휴대폰 요금</td>
+                            <td class="text-muted small">KT 5G</td>
+                            <td class="text-end amount">62,000원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-08</td>
+                            <td><span class="badge badge-category badge-health">의료/건강</span></td>
+                            <td>약국 (감기약)</td>
+                            <td class="text-muted small"></td>
+                            <td class="text-end amount">8,500원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>2026-02-07</td>
+                            <td><span class="badge badge-category badge-education">교육</span></td>
+                            <td>온라인 강의 (인프런)</td>
+                            <td class="text-muted small">Spring Boot 강의</td>
+                            <td class="text-end amount">33,000원</td>
+                            <td class="text-center">
+                                <a href="wireframe-expense-form.html" class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <button class="btn btn-outline-danger btn-sm" title="삭제">
+                                    <i class="bi bi-trash"></i>
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav class="mt-3 d-flex justify-content-center">
+        <ul class="pagination pagination-sm">
+            <li class="page-item disabled"><a class="page-link" href="#">&laquo;</a></li>
+            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+            <li class="page-item"><a class="page-link" href="#">2</a></li>
+            <li class="page-item"><a class="page-link" href="#">3</a></li>
+            <li class="page-item"><a class="page-link" href="#">4</a></li>
+            <li class="page-item"><a class="page-link" href="#">5</a></li>
+            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+        </ul>
+    </nav>
+
+</main>
+
+<!-- ========== Footer ========== -->
+<footer class="footer">
+    <div class="container text-center">
+        <p class="mb-1">노아의 가계부 &copy; 2026</p>
+        <p class="mb-0">NoaATS Pre-Assignment Project</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
