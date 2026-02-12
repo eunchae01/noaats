@@ -47,6 +47,43 @@ src/main/resources/static/
 
 ---
 
+### [2026-02-12] 주제: Phase 1 기반 세팅 - 샘플 데이터 초기화 방식 논의
+
+#### 1. AI의 초기 제안
+- `DataInitializer.java`(CommandLineRunner)를 사용하여 Repository를 통해 샘플 데이터를 삽입하는 방식 제안
+- 플랜 문서에도 `config/DataInitializer.java`로 설계되어 있었음
+
+#### 2. 개발자의 질문 / 수정 제안
+- `data.sql` 방식(Spring Boot 자동 실행 SQL)을 이전에 사용해본 경험이 있어 해당 방식을 언급
+- 두 방식의 장단점 비교를 요청
+
+#### 3. 논의 과정
+1. AI가 두 가지 방식 비교:
+   - `data.sql`: SQL INSERT문 직접 작성, 엔티티 변경 시 SQL도 동시 수정 필요
+   - `DataInitializer`: 자바 코드 기반, 엔티티 변경 시 컴파일 오류로 즉시 감지, Enum 타입 안전
+2. JPA 프로젝트에서는 DataInitializer가 관리 효율성이 더 높다고 결론
+3. `expenseRepository.count() > 0` 조건으로 중복 삽입 방지 로직 포함
+
+#### 4. 최종 결론 및 적용 사유
+- **`DataInitializer.java` 채택**: 타입 안전성, 엔티티 동기화, 코드 가독성 측면에서 우위
+- 4개월분(2025.11~2026.02) 샘플 데이터: 지출 71건, 예산 32건
+- 앱 기동 시 자동 삽입, 데이터 존재 시 초기화 건너뜀
+
+#### 5. 적용된 코드
+```
+config/DataInitializer.java  ← CommandLineRunner 기반 샘플 데이터 로더
+application.yaml             ← H2 File DB, JPA, H2 Console, Thymeleaf 설정
+domain/BaseEntity.java       ← 공통 엔티티 (id, createdAt, updatedAt)
+domain/ExpenseCategory.java  ← 8개 카테고리 Enum
+domain/Expense.java          ← 지출 엔티티
+domain/Budget.java           ← 예산 엔티티
+repository/ExpenseRepository.java ← JPQL 집계 쿼리 포함
+repository/BudgetRepository.java  ← 월별/카테고리 조회
+templates/layout/layout.html ← Thymeleaf 공통 레이아웃 (th:replace)
+```
+
+---
+
 ### [2026-02-12] 주제: 프로젝트 개발 순서 및 디자인 방향 논의
 
 #### 1. AI의 초기 제안
