@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="content">
+
+    <!-- Page Header -->
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2><i class="bi bi-receipt me-2"></i>지출 관리</h2>
+            <p>지출 내역을 기록하고 관리합니다</p>
+        </div>
+        <a th:href="@{/expenses/new}" class="btn btn-primary">
+            <i class="bi bi-plus-lg me-1"></i>지출 추가
+        </a>
+    </div>
+
+    <!-- Success Message -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i>
+        <span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form th:action="@{/expenses}" method="get" class="row g-3 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label">시작일</label>
+                    <input type="date" class="form-control" name="startDate"
+                           th:value="${startDate}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">종료일</label>
+                    <input type="date" class="form-control" name="endDate"
+                           th:value="${endDate}">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">카테고리</label>
+                    <select class="form-select" name="category">
+                        <option value="">전체</option>
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat}"
+                                th:text="${cat.displayName}"
+                                th:selected="${category != null && category == cat}">
+                        </option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-search me-1"></i>검색
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Summary Bar -->
+    <div class="d-flex justify-content-between align-items-center mb-3 px-1">
+        <span class="text-secondary">
+            총 <strong th:text="${expenses.totalElements}">0</strong>건 |
+            합계 <strong class="amount"
+                        th:text="${#numbers.formatDecimal(totalAmount, 0, 'COMMA', 0, 'POINT')} + '원'">0원</strong>
+        </span>
+    </div>
+
+    <!-- Expenses Table -->
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>카테고리</th>
+                            <th>설명</th>
+                            <th>메모</th>
+                            <th class="text-end">금액</th>
+                            <th class="text-center" style="width: 120px;">관리</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="expense : ${expenses.content}">
+                            <td th:text="${#temporals.format(expense.expenseDate, 'yyyy-MM-dd')}"></td>
+                            <td>
+                                <span class="badge badge-category"
+                                      th:classappend="'badge-' + ${expense.category.name().toLowerCase() == 'food' ? 'food' :
+                                                     expense.category.name().toLowerCase() == 'transport' ? 'transport' :
+                                                     expense.category.name().toLowerCase() == 'entertainment' ? 'entertainment' :
+                                                     expense.category.name().toLowerCase() == 'housing' ? 'housing' :
+                                                     expense.category.name().toLowerCase() == 'shopping' ? 'shopping' :
+                                                     expense.category.name().toLowerCase() == 'health' ? 'health' :
+                                                     expense.category.name().toLowerCase() == 'education' ? 'education' : 'other'}"
+                                      th:text="${expense.category.displayName}"></span>
+                            </td>
+                            <td th:text="${expense.description}"></td>
+                            <td class="text-muted small" th:text="${expense.memo}"></td>
+                            <td class="text-end amount"
+                                th:text="${#numbers.formatDecimal(expense.amount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
+                            <td class="text-center">
+                                <a th:href="@{/expenses/{id}/edit(id=${expense.id})}"
+                                   class="btn btn-outline-primary btn-sm me-1" title="수정">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form th:action="@{/expenses/{id}/delete(id=${expense.id})}"
+                                      method="post" class="d-inline"
+                                      onsubmit="return confirm('정말 삭제하시겠습니까?');">
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" title="삭제">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <!-- Empty State -->
+                        <tr th:if="${expenses.content.isEmpty()}">
+                            <td colspan="6">
+                                <div class="empty-state">
+                                    <div class="empty-icon">📝</div>
+                                    <p>등록된 지출 내역이 없습니다</p>
+                                    <a th:href="@{/expenses/new}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-plus-lg me-1"></i>첫 지출 등록하기
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    <nav th:if="${expenses.totalPages > 1}" class="mt-3 d-flex justify-content-center">
+        <ul class="pagination pagination-sm">
+            <li class="page-item" th:classappend="${expenses.first} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/expenses(startDate=${startDate}, endDate=${endDate}, category=${category}, page=${expenses.number - 1})}">&laquo;</a>
+            </li>
+            <li th:each="i : ${#numbers.sequence(0, expenses.totalPages - 1)}"
+                class="page-item"
+                th:classappend="${i == expenses.number} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/expenses(startDate=${startDate}, endDate=${endDate}, category=${category}, page=${i})}"
+                   th:text="${i + 1}"></a>
+            </li>
+            <li class="page-item" th:classappend="${expenses.last} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/expenses(startDate=${startDate}, endDate=${endDate}, category=${category}, page=${expenses.number + 1})}">&raquo;</a>
+            </li>
+        </ul>
+    </nav>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <!-- 이 페이지는 추가 스크립트 없음 -->
+</th:block>
+
+</html>

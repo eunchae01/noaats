@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="content">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <h2>
+            <i class="bi bi-receipt me-2"></i>
+            <span th:text="${isEdit} ? '지출 수정' : '지출 추가'"></span>
+        </h2>
+        <p th:text="${isEdit} ? '지출 내역을 수정합니다' : '새로운 지출을 등록합니다'"></p>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card" style="max-width: 600px;">
+        <div class="card-body">
+            <form th:action="${isEdit} ? @{/expenses/{id}(id=${expenseId})} : @{/expenses}"
+                  method="post"
+                  th:object="${expense}">
+
+                <!-- 날짜 -->
+                <div class="mb-3">
+                    <label for="expenseDate" class="form-label">
+                        날짜 <span class="text-danger">*</span>
+                    </label>
+                    <input type="date" class="form-control" id="expenseDate"
+                           th:field="*{expenseDate}"
+                           th:classappend="${#fields.hasErrors('expenseDate')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('expenseDate')}"
+                         th:errors="*{expenseDate}"></div>
+                </div>
+
+                <!-- 카테고리 -->
+                <div class="mb-3">
+                    <label for="category" class="form-label">
+                        카테고리 <span class="text-danger">*</span>
+                    </label>
+                    <select class="form-select" id="category"
+                            th:field="*{category}"
+                            th:classappend="${#fields.hasErrors('category')} ? 'is-invalid'">
+                        <option value="">카테고리 선택</option>
+                        <option th:each="cat : ${categories}"
+                                th:value="${cat}"
+                                th:text="${cat.displayName}">
+                        </option>
+                    </select>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('category')}"
+                         th:errors="*{category}"></div>
+                </div>
+
+                <!-- 금액 -->
+                <div class="mb-3">
+                    <label for="amount" class="form-label">
+                        금액 <span class="text-danger">*</span>
+                    </label>
+                    <div class="input-group">
+                        <input type="number" class="form-control" id="amount"
+                               th:field="*{amount}"
+                               placeholder="0"
+                               min="1" step="1"
+                               th:classappend="${#fields.hasErrors('amount')} ? 'is-invalid'">
+                        <span class="input-group-text">원</span>
+                        <div class="invalid-feedback" th:if="${#fields.hasErrors('amount')}"
+                             th:errors="*{amount}"></div>
+                    </div>
+                </div>
+
+                <!-- 설명 -->
+                <div class="mb-3">
+                    <label for="description" class="form-label">
+                        설명 <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" class="form-control" id="description"
+                           th:field="*{description}"
+                           placeholder="예: 점심 식사, 지하철 충전, ..."
+                           maxlength="100"
+                           th:classappend="${#fields.hasErrors('description')} ? 'is-invalid'">
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('description')}"
+                         th:errors="*{description}"></div>
+                </div>
+
+                <!-- 메모 -->
+                <div class="mb-4">
+                    <label for="memo" class="form-label">메모</label>
+                    <textarea class="form-control" id="memo"
+                              th:field="*{memo}"
+                              rows="2"
+                              placeholder="선택사항"
+                              maxlength="200"
+                              th:classappend="${#fields.hasErrors('memo')} ? 'is-invalid'"></textarea>
+                    <div class="invalid-feedback" th:if="${#fields.hasErrors('memo')}"
+                         th:errors="*{memo}"></div>
+                </div>
+
+                <!-- Buttons -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-lg me-1"></i>
+                        <span th:text="${isEdit} ? '수정' : '저장'"></span>
+                    </button>
+                    <a th:href="@{/expenses}" class="btn btn-outline-secondary">
+                        <i class="bi bi-x-lg me-1"></i>취소
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+    <!-- 이 페이지는 추가 스크립트 없음 -->
+</th:block>
+
+</html>

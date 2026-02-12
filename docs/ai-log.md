@@ -5,6 +5,43 @@ AI는 `/.claude/commands/CLAUDE.md`의 지침에 따라 이 파일에 자동으�
 
 ---
 
+### [2026-02-12] 주제: Phase 2 지출 CRUD 구현 - Validation 의존성 누락 해결
+
+#### 1. AI의 초기 제안
+- DTO에 Jakarta Validation 어노테이션(@NotNull, @NotBlank, @Size, @DecimalMin 등)을 적용하여 서버 사이드 유효성 검증 구현
+- Service 계층은 `@Transactional(readOnly = true)` 기본 설정, 쓰기 메서드만 `@Transactional` 적용
+- Controller에서 `@Valid` + `BindingResult` 패턴으로 검증 오류 처리
+
+#### 2. 개발자의 질문 / 수정 제안
+- 이 Phase에서는 별도 수정 요청 없이 진행
+
+#### 3. 논의 과정
+1. DTO 2개 작성 (ExpenseCreateRequest, ExpenseUpdateRequest)
+2. ExpenseService 작성 (CRUD + 필터 조회 + 합계 계산)
+3. ExpenseController 작성 (목록/폼/생성/수정/삭제 6개 엔드포인트)
+4. Thymeleaf 뷰 2개 작성 (list.html, form.html) - layout 상속 구조
+5. **컴파일 오류 발생**: `jakarta.validation` 패키지를 찾을 수 없음
+6. **원인 분석**: `build.gradle`에 `spring-boot-starter-validation` 의존성 누락
+7. 의존성 추가 후 컴파일 및 bootRun 정상 확인
+
+#### 4. 최종 결론 및 적용 사유
+- **Validation 의존성 추가**: Spring Boot 4에서는 starter-webmvc에 validation이 포함되지 않아 별도 추가 필요
+- **Phase 2 산출물**: DTO 2개, Service 1개, Controller 1개, Thymeleaf 뷰 2개
+- **레이아웃 상속 패턴**: 각 뷰가 `th:fragment="content"`로 본문만 정의, `layout/layout.html`이 공통 요소 관리
+
+#### 5. 적용된 코드
+```
+build.gradle                          ← validation 의존성 추가
+dto/ExpenseCreateRequest.java         ← 지출 생성 DTO + 유효성 검증
+dto/ExpenseUpdateRequest.java         ← 지출 수정 DTO + 유효성 검증
+service/ExpenseService.java           ← 지출 CRUD 비즈니스 로직
+controller/ExpenseController.java     ← 6개 엔드포인트 (목록/추가폼/생성/수정폼/수정/삭제)
+templates/expenses/list.html          ← 지출 목록 (필터, 테이블, 페이지네이션)
+templates/expenses/form.html          ← 지출 추가/수정 폼 (유효성 검증 메시지)
+```
+
+---
+
 ### [2026-02-12] 주제: Phase 0.7 와이어프레임 디자인 구현
 
 #### 1. AI의 초기 제안
