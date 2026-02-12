@@ -1,10 +1,10 @@
-package com.noaats.eunchae.controller;
+package com.noaats.eunchae.expense.controller;
 
-import com.noaats.eunchae.domain.Expense;
-import com.noaats.eunchae.domain.ExpenseCategory;
-import com.noaats.eunchae.dto.ExpenseCreateRequest;
-import com.noaats.eunchae.dto.ExpenseUpdateRequest;
-import com.noaats.eunchae.service.ExpenseService;
+import com.noaats.eunchae.expense.domain.Expense;
+import com.noaats.eunchae.expense.domain.ExpenseCategory;
+import com.noaats.eunchae.expense.dto.ExpenseCreateRequest;
+import com.noaats.eunchae.expense.dto.ExpenseUpdateRequest;
+import com.noaats.eunchae.expense.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

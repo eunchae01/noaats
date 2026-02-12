@@ -1,10 +1,10 @@
-package com.noaats.eunchae.controller;
+package com.noaats.eunchae.dashboard.controller;
 
-import com.noaats.eunchae.domain.Expense;
-import com.noaats.eunchae.dto.BudgetVsActual;
-import com.noaats.eunchae.dto.DashboardSummary;
-import com.noaats.eunchae.repository.ExpenseRepository;
-import com.noaats.eunchae.service.BudgetService;
+import com.noaats.eunchae.expense.domain.Expense;
+import com.noaats.eunchae.pattern.dto.BudgetVsActual;
+import com.noaats.eunchae.dashboard.dto.DashboardSummary;
+import com.noaats.eunchae.expense.repository.ExpenseRepository;
+import com.noaats.eunchae.budget.service.BudgetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,9 +1,9 @@
-package com.noaats.eunchae.controller;
+package com.noaats.eunchae.budget.controller;
 
-import com.noaats.eunchae.domain.ExpenseCategory;
-import com.noaats.eunchae.dto.BudgetSaveRequest;
-import com.noaats.eunchae.dto.BudgetVsActual;
-import com.noaats.eunchae.service.BudgetService;
+import com.noaats.eunchae.expense.domain.ExpenseCategory;
+import com.noaats.eunchae.budget.dto.BudgetSaveRequest;
+import com.noaats.eunchae.pattern.dto.BudgetVsActual;
+import com.noaats.eunchae.budget.service.BudgetService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;

@@ -1,8 +1,8 @@
-package com.noaats.eunchae.controller;
+package com.noaats.eunchae.pattern.controller;
 
-import com.noaats.eunchae.domain.ExpenseCategory;
-import com.noaats.eunchae.dto.CategoryChangeDto;
-import com.noaats.eunchae.repository.ExpenseRepository;
+import com.noaats.eunchae.expense.domain.ExpenseCategory;
+import com.noaats.eunchae.pattern.dto.CategoryChangeDto;
+import com.noaats.eunchae.expense.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
