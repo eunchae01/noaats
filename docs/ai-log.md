@@ -229,3 +229,37 @@ templates/budgets.html                ← 예산 관리 뷰
 ```
 
 ---
+
+### [2026-02-12] 주제: Phase 4 소비 패턴 분석 구현
+
+#### 1. AI의 초기 제안
+- PatternController에서 전월/이번달 카테고리별 지출을 조회하여 비교 데이터 생성
+- CategoryChangeDto로 변화량/변화율/증감 여부를 자동 계산
+- Chart.js 차트는 Phase 3에서 구현한 REST API(monthly-summary, category-trend) 재활용
+- Thymeleaf 뷰에서 비교 테이블은 서버 사이드 렌더링, 차트는 클라이언트 사이드 fetch
+
+#### 2. 개발자의 질문 / 수정 제안
+- 이 Phase에서는 별도 수정 요청 없이 진행
+
+#### 3. 논의 과정
+1. CategoryChangeDto 작성 (전월 대비 변화량, 변화율, 증감/중립 판별)
+2. PatternController 작성 (GET /patterns, 카테고리별 전월 대비 비교 데이터 계산)
+3. patterns.html Thymeleaf 뷰 작성:
+   - 월별 총지출 라인 차트 (fetch `/api/expenses/monthly-summary`)
+   - 카테고리별 월별 누적 막대 차트 (fetch `/api/expenses/category-trend`)
+   - 전월 대비 변화 테이블 (Thymeleaf 서버 사이드 렌더링)
+4. 컴파일 정상 확인
+
+#### 4. 최종 결론 및 적용 사유
+- **CategoryChangeDto**: `isIncrease()`, `isDecrease()`, `isNeutral()` 메서드로 Thymeleaf에서 조건부 렌더링
+- **REST API 재활용**: Phase 3에서 구현한 ChartApiController의 monthly-summary, category-trend 엔드포인트를 그대로 사용
+- **비교 테이블**: 카테고리별 전월/이번달 금액, 변화량(+/-), 변화율(%) 표시, 합계 행 포함
+
+#### 5. 적용된 코드
+```
+dto/CategoryChangeDto.java           ← 전월 대비 변화 DTO (변화량/변화율/증감 판별)
+controller/PatternController.java    ← 소비 패턴 (GET /patterns)
+templates/patterns.html              ← 소비 패턴 뷰 (라인차트 + 누적막대 + 비교테이블)
+```
+
+---
