@@ -4,6 +4,7 @@ import com.noaats.eunchae.domain.Expense;
 import com.noaats.eunchae.domain.ExpenseCategory;
 import com.noaats.eunchae.dto.ExpenseCreateRequest;
 import com.noaats.eunchae.dto.ExpenseUpdateRequest;
+import com.noaats.eunchae.exception.ResourceNotFoundException;
 import com.noaats.eunchae.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -35,7 +36,7 @@ public class ExpenseService {
     // 단건 조회
     public Expense getExpense(Long id) {
         return expenseRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("지출 내역을 찾을 수 없습니다. id=" + id));
+                .orElseThrow(() -> new ResourceNotFoundException("지출 내역을 찾을 수 없습니다. id=" + id));
     }
 
     // 생성

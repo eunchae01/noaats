@@ -263,3 +263,57 @@ templates/patterns.html              ← 소비 패턴 뷰 (라인차트 + 누�
 ```
 
 ---
+
+### [2026-02-12] 주제: Phase 5 마무리 - 단위 테스트, 에러 처리, UI 개선
+
+#### 1. AI의 초기 제안
+- test.md 규칙에 따라 BDD 스타일 단위 테스트 작성 (JUnit 5 + BDDMockito + AssertJ)
+- Service 계층(ExpenseService, BudgetService) + DTO(BudgetVsActual, CategoryChangeDto) 4개 테스트 클래스 작성
+- @ControllerAdvice로 글로벌 에러 핸들링, ResourceNotFoundException 커스텀 예외 도입
+- 에러 페이지 3종(400/404/500) 작성
+- build.gradle의 테스트 의존성을 개별 starter 3개에서 spring-boot-starter-test로 통합
+
+#### 2. 개발자의 질문 / 수정 제안
+- 개발자가 test.md 파일 참조를 직접 지시하여 테스트 작성 규칙을 명확히 함
+
+#### 3. 논의 과정
+1. build.gradle 테스트 의존성 정리 (3개 → spring-boot-starter-test 1개로 통합)
+2. ExpenseServiceTest 작성 (7개 테스트: CRUD + 필터 분기 + 예외)
+3. BudgetServiceTest 작성 (10개 테스트: 요약/알림/저장/복사 + 엣지케이스)
+4. BudgetVsActualTest 작성 (5개 테스트: 퍼센티지 0나누기, 색상 3단계 분기)
+5. CategoryChangeDtoTest 작성 (4개 테스트: 증감/중립 판별, 이전금액 0 처리)
+6. 컴파일 오류 수정: `List.of(new Object[]{})` 타입 추론 문제 → `Arrays.<Object[]>asList()` 사용
+7. 전체 테스트 통과 확인 (BUILD SUCCESSFUL)
+8. ResourceNotFoundException 커스텀 예외 + GlobalExceptionHandler + 에러 페이지 3종 작성
+9. ExpenseService의 IllegalArgumentException → ResourceNotFoundException으로 교체
+10. patterns.html 빈 상태 메시지 추가
+11. test/java/docs/ 하위에 테스트 클래스별 마크다운 문서 4개 작성
+
+#### 4. 최종 결론 및 적용 사유
+- **단위 테스트 26개**: Service 2개 + DTO 2개 = 4개 테스트 클래스, 전체 통과
+- **test.md 규칙 준수**: BDD 메서드명, MockitoExtension, AssertJ, 독립적 테스트, 테스트 문서 생성
+- **에러 처리 체계화**: 커스텀 예외 → @ControllerAdvice → 에러 페이지 3단 구조
+- **UI 개선**: patterns.html 빈 상태 처리 추가 (기존 템플릿은 이미 KRW 포맷, table-responsive, 빈 상태 적용)
+- **테스트 의존성 통합**: starter-test 하나로 JUnit 5, Mockito, AssertJ 모두 포함
+
+#### 5. 적용된 코드
+```
+build.gradle                                      ← 테스트 의존성 통합 (starter-test)
+service/ExpenseService.java                       ← ResourceNotFoundException 적용
+exception/ResourceNotFoundException.java          ← 커스텀 예외 클래스
+exception/GlobalExceptionHandler.java             ← 글로벌 에러 핸들러
+templates/error/400.html                          ← 400 에러 페이지
+templates/error/404.html                          ← 404 에러 페이지
+templates/error/500.html                          ← 500 에러 페이지
+templates/patterns.html                           ← 빈 상태 메시지 추가
+test/.../service/ExpenseServiceTest.java          ← 지출 서비스 테스트 (7건)
+test/.../service/BudgetServiceTest.java           ← 예산 서비스 테스트 (10건)
+test/.../dto/BudgetVsActualTest.java              ← 예산 대비 실제 DTO 테스트 (5건)
+test/.../dto/CategoryChangeDtoTest.java           ← 카테고리 변화 DTO 테스트 (4건)
+test/java/docs/.../ExpenseServiceTest.md          ← 테스트 문서
+test/java/docs/.../BudgetServiceTest.md           ← 테스트 문서
+test/java/docs/.../BudgetVsActualTest.md          ← 테스트 문서
+test/java/docs/.../CategoryChangeDtoTest.md       ← 테스트 문서
+```
+
+---

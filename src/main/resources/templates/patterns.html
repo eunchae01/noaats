@@ -51,6 +51,14 @@
                         </tr>
                     </thead>
                     <tbody>
+                        <tr th:if="${changes.isEmpty()}">
+                            <td colspan="5">
+                                <div class="empty-state">
+                                    <div class="empty-icon"><i class="bi bi-bar-chart-line"></i></div>
+                                    <p>비교할 지출 데이터가 없습니다</p>
+                                </div>
+                            </td>
+                        </tr>
                         <tr th:each="c : ${changes}">
                             <td>
                                 <span class="badge badge-category"
