@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:fragment="content">
+
+    <!-- Page Header -->
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2><i class="bi bi-wallet2 me-2"></i>예산 관리</h2>
+            <p>카테고리별 예산을 설정하고 실제 지출과 비교합니다</p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <div class="month-selector">
+                <a th:href="@{/budgets(yearMonth=${prevMonth})}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+                <span class="current-month" th:text="${displayMonth}"></span>
+                <a th:href="@{/budgets(yearMonth=${nextMonth})}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </div>
+            <form th:action="@{/budgets/copy-previous}" method="post" class="d-inline">
+                <input type="hidden" name="yearMonth" th:value="${yearMonth}">
+                <button type="submit" class="btn btn-outline-primary btn-sm"
+                        onclick="return confirm('이전 달 예산을 복사하시겠습니까?');">
+                    <i class="bi bi-copy me-1"></i>지난달 복사
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    <div th:if="${message}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="bi bi-check-circle me-1"></i><span th:text="${message}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="bi bi-exclamation-circle me-1"></i><span th:text="${error}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-4">
+            <div class="card summary-card accent-green">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="summary-icon"><i class="bi bi-piggy-bank"></i></div>
+                        <div>
+                            <div class="summary-label">총 예산</div>
+                            <div class="summary-value"
+                                 th:text="${#numbers.formatDecimal(totalBudget, 0, 'COMMA', 0, 'POINT')} + '원'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card summary-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="summary-icon"><i class="bi bi-credit-card"></i></div>
+                        <div>
+                            <div class="summary-label">총 지출</div>
+                            <div class="summary-value"
+                                 th:text="${#numbers.formatDecimal(totalActual, 0, 'COMMA', 0, 'POINT')} + '원'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card summary-card accent-orange">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="summary-icon"><i class="bi bi-cash-stack"></i></div>
+                        <div>
+                            <div class="summary-label">잔여</div>
+                            <div class="summary-value"
+                                 th:classappend="${totalRemaining.signum() >= 0} ? 'amount-positive' : 'amount-negative'"
+                                 th:text="${#numbers.formatDecimal(totalRemaining, 0, 'COMMA', 0, 'POINT')} + '원'"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Budget Table -->
+        <div class="col-lg-7">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span><i class="bi bi-list-check me-2"></i>카테고리별 예산</span>
+                </div>
+                <div class="card-body p-0">
+                    <form th:action="@{/budgets}" method="post">
+                        <input type="hidden" name="yearMonth" th:value="${yearMonth}">
+                        <div class="table-responsive">
+                            <table class="table mb-0">
+                                <thead>
+                                    <tr>
+                                        <th>카테고리</th>
+                                        <th style="width: 140px;">예산</th>
+                                        <th class="text-end">지출</th>
+                                        <th style="width: 180px;">진행률</th>
+                                        <th class="text-end">잔여</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr th:each="bva : ${budgetList}">
+                                        <td>
+                                            <span class="badge badge-category"
+                                                  th:classappend="'badge-' + ${bva.category.name().toLowerCase() == 'food' ? 'food' :
+                                                                 bva.category.name().toLowerCase() == 'transport' ? 'transport' :
+                                                                 bva.category.name().toLowerCase() == 'entertainment' ? 'entertainment' :
+                                                                 bva.category.name().toLowerCase() == 'housing' ? 'housing' :
+                                                                 bva.category.name().toLowerCase() == 'shopping' ? 'shopping' :
+                                                                 bva.category.name().toLowerCase() == 'health' ? 'health' :
+                                                                 bva.category.name().toLowerCase() == 'education' ? 'education' : 'other'}"
+                                                  th:text="${bva.category.displayName}"></span>
+                                        </td>
+                                        <td>
+                                            <input type="number" class="form-control form-control-sm text-end"
+                                                   th:name="'amounts[' + ${bva.category} + ']'"
+                                                   th:value="${bva.budgetAmount}"
+                                                   min="0" step="10000">
+                                        </td>
+                                        <td class="text-end amount"
+                                            th:text="${#numbers.formatDecimal(bva.actualAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
+                                        <td>
+                                            <div class="d-flex align-items-center gap-2">
+                                                <div class="progress flex-grow-1">
+                                                    <div class="progress-bar"
+                                                         th:classappend="'bg-' + ${bva.progressColor}"
+                                                         th:style="'width:' + ${bva.percentage > 100 ? 100 : bva.percentage} + '%'"></div>
+                                                </div>
+                                                <small th:classappend="'text-' + ${bva.textColor} + ' fw-bold'"
+                                                       th:text="${bva.percentage} + '%'"></small>
+                                            </div>
+                                        </td>
+                                        <td class="text-end amount"
+                                            th:classappend="${bva.remaining.signum() >= 0} ? 'amount-positive' : 'amount-negative'"
+                                            th:text="${#numbers.formatDecimal(bva.remaining, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="card-footer text-end">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-check-lg me-1"></i>저장
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="col-lg-5">
+            <div class="card h-100">
+                <div class="card-header">
+                    <i class="bi bi-bar-chart me-2"></i>예산 vs 실제 지출
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="height: 400px;">
+                        <canvas id="budgetChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</th:block>
+
+<th:block th:fragment="scripts">
+<script th:inline="javascript">
+    const yearMonth = [[${yearMonth}]];
+
+    fetch('/api/expenses/budget-vs-actual?yearMonth=' + yearMonth)
+        .then(res => res.json())
+        .then(data => {
+            const ctx = document.getElementById('budgetChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [
+                        {
+                            label: '예산',
+                            data: data.budgetValues,
+                            backgroundColor: 'rgba(74, 144, 217, 0.25)',
+                            borderColor: '#4A90D9',
+                            borderWidth: 1,
+                            borderRadius: 4
+                        },
+                        {
+                            label: '실제 지출',
+                            data: data.actualValues,
+                            backgroundColor: data.actualValues.map((v, i) => {
+                                const ratio = data.budgetValues[i] > 0 ? v / data.budgetValues[i] : 0;
+                                if (ratio >= 1) return 'rgba(220, 53, 69, 0.7)';
+                                if (ratio >= 0.8) return 'rgba(245, 158, 11, 0.7)';
+                                return 'rgba(40, 167, 69, 0.7)';
+                            }),
+                            borderRadius: 4
+                        }
+                    ]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { usePointStyle: true, pointStyleWidth: 10 } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) { return ' ' + ctx.dataset.label + ': ' + ctx.parsed.x.toLocaleString() + '원'; }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { callback: v => (v/10000) + '만' }, grid: { color: 'rgba(0,0,0,0.05)' } },
+                        y: { grid: { display: false } }
+                    }
+                }
+            });
+        });
+</script>
+</th:block>
+
+</html>

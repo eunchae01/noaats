@@ -5,39 +5,46 @@ AI는 `/.claude/commands/CLAUDE.md`의 지침에 따라 이 파일에 자동으�
 
 ---
 
-### [2026-02-12] 주제: Phase 2 지출 CRUD 구현 - Validation 의존성 누락 해결
+### [2026-02-12] 주제: 프로젝트 개발 순서 및 디자인 방향 논의
 
 #### 1. AI의 초기 제안
-- DTO에 Jakarta Validation 어노테이션(@NotNull, @NotBlank, @Size, @DecimalMin 등)을 적용하여 서버 사이드 유효성 검증 구현
-- Service 계층은 `@Transactional(readOnly = true)` 기본 설정, 쓰기 메서드만 `@Transactional` 적용
-- Controller에서 `@Valid` + `BindingResult` 패턴으로 검증 오류 처리
+- 기획서(PLAN.md) 작성 완료 후 바로 Phase 1 코드 구현(application.yaml, 엔티티, Repository 등)으로 진행하는 순서를 제안
+- 구현 순서: 기반 세팅 → 지출 CRUD → 대시보드 → 소비 패턴 → 마무리
 
 #### 2. 개발자의 질문 / 수정 제안
-- 이 Phase에서는 별도 수정 요청 없이 진행
+- 실무 프로젝트 진행 순서(기획 → 디자인 → 개발)를 따르는 것이 적절하다고 판단, AI가 제안한 순서 조정 요청
+- UI/UX가 평가 가산점 항목에 포함되어 있으므로 디자인 단계를 별도로 진행할 것을 제안
+- 디자인 접근법으로 와이어프레임을 먼저 작성하여 레이아웃을 확정한 뒤 개발에 착수하는 방식 선택
+- 색상 테마는 노아에이티에스 홈페이지의 브랜드 컬러(블루 계열)를 참고하여, 금융 서비스에도 적합한 네이비/블루 계열로 방향 설정
 
 #### 3. 논의 과정
-1. DTO 2개 작성 (ExpenseCreateRequest, ExpenseUpdateRequest)
-2. ExpenseService 작성 (CRUD + 필터 조회 + 합계 계산)
-3. ExpenseController 작성 (목록/폼/생성/수정/삭제 6개 엔드포인트)
-4. Thymeleaf 뷰 2개 작성 (list.html, form.html) - layout 상속 구조
-5. **컴파일 오류 발생**: `jakarta.validation` 패키지를 찾을 수 없음
-6. **원인 분석**: `build.gradle`에 `spring-boot-starter-validation` 의존성 누락
-7. 의존성 추가 후 컴파일 및 bootRun 정상 확인
+1. AI가 기획서 → 바로 코드 구현 순서를 제안
+2. 개발자가 실무 프로세스(기획 → 디자인 → 개발)를 따르자고 수정
+3. 디자인 접근법 3가지 제안: ① 코드로 바로 구현 ② 와이어프레임 먼저 ③ 참고 디자인 찾기
+4. 개발자가 "와이어프레임 먼저" 선택
+5. 색상 테마 3가지 제안: ① 네이비/블루 ② 그린/민트 ③ 기본 Bootstrap
+6. 개발자가 "네이비/블루 계열" 선택
 
 #### 4. 최종 결론 및 적용 사유
-- **Validation 의존성 추가**: Spring Boot 4에서는 starter-webmvc에 validation이 포함되지 않아 별도 추가 필요
-- **Phase 2 산출물**: DTO 2개, Service 1개, Controller 1개, Thymeleaf 뷰 2개
-- **레이아웃 상속 패턴**: 각 뷰가 `th:fragment="content"`로 본문만 정의, `layout/layout.html`이 공통 요소 관리
+- **개발 순서 변경**: 기획 → 디자인(와이어프레임) → 개발
+  - 실무 프로세스를 따르는 것이 개발자 입장에서 더 좋다고 판단
+- **Phase 0.7 추가**: 와이어프레임 단계를 구현 계획에 삽입
+  - 정적 HTML로 4개 페이지 목업 작성 → 브라우저 확인 → Thymeleaf로 전환
+- **디자인 테마**: 네이비/블루 계열
+  - Primary: #1B2A4A, Accent: #4A90D9, Background: #F5F7FA
+  - 노아에이티에스 홈페이지 브랜드 컬러를 참고하여 톤 통일
+  - 금융 서비스에 적합한 신뢰감 있는 색상 (토스, 카카오뱅크 등 참고)
 
 #### 5. 적용된 코드
-```
-build.gradle                          ← validation 의존성 추가
-dto/ExpenseCreateRequest.java         ← 지출 생성 DTO + 유효성 검증
-dto/ExpenseUpdateRequest.java         ← 지출 수정 DTO + 유효성 검증
-service/ExpenseService.java           ← 지출 CRUD 비즈니스 로직
-controller/ExpenseController.java     ← 6개 엔드포인트 (목록/추가폼/생성/수정폼/수정/삭제)
-templates/expenses/list.html          ← 지출 목록 (필터, 테이블, 페이지네이션)
-templates/expenses/form.html          ← 지출 추가/수정 폼 (유효성 검증 메시지)
+```markdown
+<!-- 계획 파일(gleaming-fluttering-swan.md)에 추가된 내용 -->
+### Phase 0.7: 디자인 (와이어프레임)
+- 색상 테마: 네이비/블루 계열
+  - Primary: 네이비 (#1B2A4A)
+  - Accent: 블루 (#4A90D9)
+  - Background: 연한 회색 (#F5F7FA)
+- 작업: 4개 페이지 정적 HTML 와이어프레임 작성
+- 브라우저 확인 후 Thymeleaf 템플릿으로 전환
 ```
 
 ---
@@ -121,46 +128,104 @@ templates/layout/layout.html ← Thymeleaf 공통 레이아웃 (th:replace)
 
 ---
 
-### [2026-02-12] 주제: 프로젝트 개발 순서 및 디자인 방향 논의
+### [2026-02-12] 주제: Phase 2 지출 CRUD 구현 - Validation 의존성 누락 해결
 
 #### 1. AI의 초기 제안
-- 기획서(PLAN.md) 작성 완료 후 바로 Phase 1 코드 구현(application.yaml, 엔티티, Repository 등)으로 진행하는 순서를 제안
-- 구현 순서: 기반 세팅 → 지출 CRUD → 대시보드 → 소비 패턴 → 마무리
+- DTO에 Jakarta Validation 어노테이션(@NotNull, @NotBlank, @Size, @DecimalMin 등)을 적용하여 서버 사이드 유효성 검증 구현
+- Service 계층은 `@Transactional(readOnly = true)` 기본 설정, 쓰기 메서드만 `@Transactional` 적용
+- Controller에서 `@Valid` + `BindingResult` 패턴으로 검증 오류 처리
 
 #### 2. 개발자의 질문 / 수정 제안
-- 실무 프로젝트 진행 순서(기획 → 디자인 → 개발)를 따르는 것이 적절하다고 판단, AI가 제안한 순서 조정 요청
-- UI/UX가 평가 가산점 항목에 포함되어 있으므로 디자인 단계를 별도로 진행할 것을 제안
-- 디자인 접근법으로 와이어프레임을 먼저 작성하여 레이아웃을 확정한 뒤 개발에 착수하는 방식 선택
-- 색상 테마는 노아에이티에스 홈페이지의 브랜드 컬러(블루 계열)를 참고하여, 금융 서비스에도 적합한 네이비/블루 계열로 방향 설정
+- 이 Phase에서는 별도 수정 요청 없이 진행
 
 #### 3. 논의 과정
-1. AI가 기획서 → 바로 코드 구현 순서를 제안
-2. 개발자가 실무 프로세스(기획 → 디자인 → 개발)를 따르자고 수정
-3. 디자인 접근법 3가지 제안: ① 코드로 바로 구현 ② 와이어프레임 먼저 ③ 참고 디자인 찾기
-4. 개발자가 "와이어프레임 먼저" 선택
-5. 색상 테마 3가지 제안: ① 네이비/블루 ② 그린/민트 ③ 기본 Bootstrap
-6. 개발자가 "네이비/블루 계열" 선택
+1. DTO 2개 작성 (ExpenseCreateRequest, ExpenseUpdateRequest)
+2. ExpenseService 작성 (CRUD + 필터 조회 + 합계 계산)
+3. ExpenseController 작성 (목록/폼/생성/수정/삭제 6개 엔드포인트)
+4. Thymeleaf 뷰 2개 작성 (list.html, form.html) - layout 상속 구조
+5. **컴파일 오류 발생**: `jakarta.validation` 패키지를 찾을 수 없음
+6. **원인 분석**: `build.gradle`에 `spring-boot-starter-validation` 의존성 누락
+7. 의존성 추가 후 컴파일 및 bootRun 정상 확인
 
 #### 4. 최종 결론 및 적용 사유
-- **개발 순서 변경**: 기획 → 디자인(와이어프레임) → 개발
-  - 실무 프로세스를 따르는 것이 개발자 입장에서 더 좋다고 판단
-- **Phase 0.7 추가**: 와이어프레임 단계를 구현 계획에 삽입
-  - 정적 HTML로 4개 페이지 목업 작성 → 브라우저 확인 → Thymeleaf로 전환
-- **디자인 테마**: 네이비/블루 계열
-  - Primary: #1B2A4A, Accent: #4A90D9, Background: #F5F7FA
-  - 노아에이티에스 홈페이지 브랜드 컬러를 참고하여 톤 통일
-  - 금융 서비스에 적합한 신뢰감 있는 색상 (토스, 카카오뱅크 등 참고)
+- **Validation 의존성 추가**: Spring Boot 4에서는 starter-webmvc에 validation이 포함되지 않아 별도 추가 필요
+- **Phase 2 산출물**: DTO 2개, Service 1개, Controller 1개, Thymeleaf 뷰 2개
+- **레이아웃 상속 패턴**: 각 뷰가 `th:fragment="content"`로 본문만 정의, `layout/layout.html`이 공통 요소 관리
 
 #### 5. 적용된 코드
-```markdown
-<!-- 계획 파일(gleaming-fluttering-swan.md)에 추가된 내용 -->
-### Phase 0.7: 디자인 (와이어프레임)
-- 색상 테마: 네이비/블루 계열
-  - Primary: 네이비 (#1B2A4A)
-  - Accent: 블루 (#4A90D9)
-  - Background: 연한 회색 (#F5F7FA)
-- 작업: 4개 페이지 정적 HTML 와이어프레임 작성
-- 브라우저 확인 후 Thymeleaf 템플릿으로 전환
+```
+build.gradle                          ← validation 의존성 추가
+dto/ExpenseCreateRequest.java         ← 지출 생성 DTO + 유효성 검증
+dto/ExpenseUpdateRequest.java         ← 지출 수정 DTO + 유효성 검증
+service/ExpenseService.java           ← 지출 CRUD 비즈니스 로직
+controller/ExpenseController.java     ← 6개 엔드포인트 (목록/추가폼/생성/수정폼/수정/삭제)
+templates/expenses/list.html          ← 지출 목록 (필터, 테이블, 페이지네이션)
+templates/expenses/form.html          ← 지출 추가/수정 폼 (유효성 검증 메시지)
+```
+
+---
+
+### [2026-02-12] 주제: AI 활용 기록 로그 순서 검수
+
+#### 1. AI의 초기 제안
+- 각 Phase 완료 시 ai-log.md에 항목을 추가하는 방식으로 기록
+- 새 로그를 파일 하단에 삽입하는 방식으로 작성
+
+#### 2. 개발자의 질문 / 수정 제안
+- 로그가 시간순으로 기록되어야 하는데 역순으로 작성된 것을 확인
+- 순서를 올바르게 수정할 것을 요청
+
+#### 3. 논의 과정
+1. 개발자가 기록 순서가 맞는지 확인 요청
+2. 확인 결과 Phase 2(최신)가 맨 위, 개발 순서 논의(최초)가 맨 아래로 역순 배치
+3. 시간순 정렬로 전체 재배치 수행
+
+#### 4. 최종 결론 및 적용 사유
+- **로그 순서 수정**: 오래된 기록이 위, 최신 기록이 아래 (시간순 정렬)
+- 이후 새로운 로그는 파일 하단에 추가하는 방식으로 통일
+
+#### 5. 적용된 코드
+```
+docs/ai-log.md ← 전체 항목 시간순 재배치
+```
+
+---
+
+### [2026-02-12] 주제: Phase 3 대시보드 + 예산 관리 구현
+
+#### 1. AI의 초기 제안
+- 대시보드: DashboardSummary DTO로 요약 데이터 전달, Chart.js REST API로 도넛차트 렌더링
+- 예산 관리: BudgetVsActual DTO로 진행률/색상 자동 계산, 일괄 저장 + 지난달 복사 기능
+- REST API: 4개 엔드포인트 (카테고리요약, 월별총계, 카테고리트렌드, 예산vs실제)
+
+#### 2. 개발자의 질문 / 수정 제안
+- 이 Phase에서는 별도 수정 요청 없이 진행
+
+#### 3. 논의 과정
+1. DTO 3개 작성 (DashboardSummary, BudgetVsActual, BudgetSaveRequest)
+2. BudgetService 작성 (대시보드 요약, 예산vs실제, 알림, 저장, 지난달 복사)
+3. DashboardController 작성 (월 네비게이션 포함)
+4. BudgetController 작성 (목록/저장/지난달복사)
+5. ChartApiController 작성 (REST API 4개 엔드포인트)
+6. Thymeleaf 뷰 2개 작성 (dashboard.html, budgets.html)
+7. 컴파일 및 bootRun 정상 확인
+
+#### 4. 최종 결론 및 적용 사유
+- **대시보드**: 요약카드 4개 + 도넛차트(API) + 예산알림(80%이상) + 최근지출 5건
+- **예산 관리**: 카테고리별 예산 입력/수정 + 진행바(초록/노랑/빨강) + 가로막대 비교차트(API)
+- **REST API**: Chart.js에서 fetch로 JSON 데이터 요청, SSR과 분리하여 차트 렌더링
+
+#### 5. 적용된 코드
+```
+dto/DashboardSummary.java             ← 대시보드 요약 DTO
+dto/BudgetVsActual.java               ← 예산 vs 실제 DTO (진행률/색상 자동 계산)
+dto/BudgetSaveRequest.java            ← 예산 일괄 저장 DTO
+service/BudgetService.java            ← 예산 비즈니스 로직
+controller/DashboardController.java   ← 대시보드 (GET /)
+controller/BudgetController.java      ← 예산 관리 (GET/POST /budgets)
+controller/api/ChartApiController.java ← REST API 4개 엔드포인트
+templates/dashboard.html              ← 대시보드 뷰
+templates/budgets.html                ← 예산 관리 뷰
 ```
 
 ---
