@@ -461,3 +461,40 @@ README.md                      ← CI/CD 섹션 추가 (워크플로우, Secrets
 ```
 
 ---
+
+### [2026-02-13] 주제: Nginx 리버스 프록시 및 Let's Encrypt SSL 인증서 적용
+
+#### 1. AI의 초기 제안
+- Nginx를 리버스 프록시로 사용하여 80/443 포트에서 Spring Boot(8080)로 전달
+- Let's Encrypt + Certbot으로 무료 SSL 인증서 발급 및 자동 갱신
+- SSL 적용을 위해 도메인이 필요하므로 Duck DNS 무료 서브도메인 사용 제안
+
+#### 2. 개발자의 질문 / 수정 제안
+- SSL 인증서 적용 요청
+- 도메인이 없는 상태에서 Duck DNS(`noaats.duckdns.org`)로 무료 도메인 등록
+- 로고 이미지가 HTTPS 환경에서 깨지는 문제 발견 (외부 HTTP URL → Mixed Content 차단)
+
+#### 3. 논의 과정
+1. SSL 인증서에 도메인이 필수임을 확인 → Duck DNS 무료 서브도메인 등록
+2. `noaats.duckdns.org` → EC2 IP(`43.200.5.102`) 매핑 완료
+3. EC2에 Nginx 설치 및 리버스 프록시 설정 (80 → localhost:8080)
+4. Certbot으로 Let's Encrypt SSL 인증서 발급 (HTTPS 자동 리다이렉트)
+5. 보안 그룹에 80(HTTP), 443(HTTPS) 포트 추가
+6. 로고 깨짐 발견: `http://www.noaats.com/images/logo_gnb_off.svg` 외부 참조
+   - HTTPS 페이지에서 HTTP 리소스 로드 시 Mixed Content로 브라우저가 차단
+   - 해결: 로고 SVG를 프로젝트 내부(`/images/logo.svg`)로 다운로드, Thymeleaf `th:src` 적용
+
+#### 4. 최종 결론 및 적용 사유
+- **도메인**: Duck DNS 무료 서브도메인 `noaats.duckdns.org` 사용
+- **Nginx 리버스 프록시**: 클라이언트 → Nginx(80/443) → Spring Boot(8080) 구조
+- **SSL 인증서**: Let's Encrypt 무료 인증서, Certbot이 Nginx 설정 자동 수정, 90일마다 자동 갱신
+- **로고 Mixed Content 해결**: 외부 HTTP URL 의존을 제거하고 로컬 리소스로 변경
+
+#### 5. 적용된 코드
+```
+src/main/resources/static/images/logo.svg          ← 로고 이미지 로컬 저장
+src/main/resources/templates/layout/layout.html     ← 로고 경로 th:src="@{/images/logo.svg}"로 변경
+README.md                                           ← SSL, Nginx 설정 가이드 추가
+```
+
+---

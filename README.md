@@ -14,8 +14,9 @@
 | Database | H2 (File 모드) | - |
 | Build | Gradle | 9.3 |
 | Testing | JUnit 5, Mockito, AssertJ | - |
-| Infra | Docker, AWS EC2 | - |
+| Infra | Docker, AWS EC2, Nginx | - |
 | CI/CD | GitHub Actions | - |
+| SSL | Let's Encrypt (Certbot) | - |
 
 ## 실행 방법
 
@@ -181,7 +182,7 @@ GitHub Actions를 사용한 자동화 파이프라인
 1. GitHub → **Actions** 탭 클릭
 2. 좌측에서 **"Deploy to EC2"** 선택
 3. **"Run workflow"** 버튼 클릭
-4. 배포 완료 후 `http://<EC2-IP>:8080` 접속
+4. 배포 완료 후 `https://noaats.duckdns.org` 접속
 
 ### GitHub Secrets 설정 (배포 시 필요)
 
@@ -252,8 +253,38 @@ nohup java -Dspring.profiles.active=prod -Xmx512m -jar budget-0.0.1-SNAPSHOT.jar
 ```
 
 **3. 보안 그룹 설정**
-- 인바운드 규칙에 TCP 포트 8080 허용
-- 접속: `http://<EC2-퍼블릭-IP>:8080`
+- 인바운드 규칙에 TCP 포트 80(HTTP), 443(HTTPS) 허용
+
+**4. Nginx + SSL 설정**
+```bash
+# Nginx 설치
+sudo apt install -y nginx
+
+# 리버스 프록시 설정
+sudo tee /etc/nginx/sites-available/budget > /dev/null << 'CONF'
+server {
+    listen 80;
+    server_name noaats.duckdns.org;
+    location / {
+        proxy_pass http://localhost:8080;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+CONF
+
+sudo ln -s /etc/nginx/sites-available/budget /etc/nginx/sites-enabled/
+sudo rm /etc/nginx/sites-enabled/default
+sudo nginx -t && sudo systemctl restart nginx
+
+# Let's Encrypt SSL 인증서 발급
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d noaats.duckdns.org
+```
+
+- 접속: https://noaats.duckdns.org
 
 ## 문서
 
