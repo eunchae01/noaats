@@ -317,3 +317,147 @@ test/java/docs/.../CategoryChangeDtoTest.md       ← 테스트 문서
 ```
 
 ---
+
+### [2026-02-13] 주제: 폴더 구조 리팩토링 및 버그 수정
+
+#### 1. AI의 초기 제안
+- 기존 flat 구조의 파일들을 모듈별(common, expense, budget, dashboard, pattern) 하위 패키지로 재구성
+- 이전 위치에 남아있던 중복 파일 정리 및 삭제
+
+#### 2. 개발자의 질문 / 수정 제안
+- 폴더 구조 변경 후 이전 파일들이 남아있는 문제 지적
+- `ExpenseService.calculateTotal()` 메서드에서 category 파라미터가 누락된 버그 발견
+
+#### 3. 논의 과정
+1. 모듈별 패키지 구조로 파일 재배치 (common, expense, budget, dashboard, pattern)
+2. 이전 위치에 남아있던 파일 삭제 작업 진행:
+   - 공통/예산/대시보드 관련 이전 파일 삭제
+   - 지출/패턴 관련 이전 파일 삭제
+   - 이전 테스트 파일 삭제
+   - 이전 PatternController 파일 삭제
+3. `ExpenseService.calculateTotal()` 메서드의 category 파라미터 누락 버그 수정
+
+#### 4. 최종 결론 및 적용 사유
+- **모듈별 패키지 구조 완성**: 기능별로 controller, domain, dto, repository, service가 하나의 패키지 안에 모여있어 응집도 향상
+- **중복 파일 완전 정리**: 5회 커밋에 걸쳐 이전 위치의 파일들을 모두 삭제
+- **버그 수정**: `calculateTotal()`에서 카테고리 필터가 적용되지 않던 문제 해결
+
+#### 5. 적용된 코드
+```
+com/noaats/eunchae/
+├── common/config/          ← DataInitializer 이동
+├── common/domain/          ← BaseEntity 이동
+├── common/exception/       ← GlobalExceptionHandler, ResourceNotFoundException 이동
+├── expense/                ← 지출 관련 전체 이동
+├── budget/                 ← 예산 관련 전체 이동
+├── dashboard/              ← 대시보드 관련 전체 이동
+├── pattern/                ← 소비 패턴 관련 전체 이동
+└── expense/service/ExpenseService.java ← calculateTotal() category 파라미터 수정
+```
+
+---
+
+### [2026-02-13] 주제: README.md 전면 업데이트
+
+#### 1. AI의 초기 제안
+- 기존 README.md에 TODO 주석으로 남아있던 프로젝트 구조, API 명세, 스크린샷 섹션을 실제 내용으로 채울 것을 제안
+- 프로젝트 전체를 탐색하여 최신 코드 상태를 반영한 포괄적 README 작성
+
+#### 2. 개발자의 질문 / 수정 제안
+- 개발자가 README 업데이트와 함께 ai-log.md도 동시에 업데이트할 것을 요청
+- AWS 업로드 후 접속 가능한 상태를 만들 것을 요청
+
+#### 3. 논의 과정
+1. 프로젝트 전체 구조 탐색 (소스 코드, 설정 파일, 테스트, 문서 등)
+2. 기존 README.md의 TODO 항목 확인: 스크린샷, 프로젝트 구조 상세, API 명세
+3. 프로젝트 구조를 트리 형태로 정리하여 README에 추가
+4. 페이지 엔드포인트 11개 + REST API 엔드포인트 4개를 테이블로 명세
+5. 카테고리 분류, 테스트 현황, 아키텍처 다이어그램 추가
+6. 빌드 및 테스트 명령어 섹션 추가
+7. 문서 링크에 guide.md, ai-log.md 추가
+
+#### 4. 최종 결론 및 적용 사유
+- **README.md 전면 개편**: 기술 스택 테이블에 버전 컬럼 추가, 프로젝트 구조 트리 추가, API 명세 (SSR 11개 + REST 4개) 추가, 카테고리 분류표 추가, 테스트 현황표 추가, 아키텍처 다이어그램 추가
+- **TODO 주석 해소**: 기존 `<!-- TODO: 스크린샷 추가 -->`, `<!-- TODO: 프로젝트 구조 상세 -->`, `<!-- TODO: API 명세 -->` 3개 TODO 항목을 실제 내용으로 대체
+- **문서 링크 보강**: PLAN.md 외에 guide.md, ai-log.md 링크 추가
+
+#### 5. 적용된 코드
+```
+README.md       ← 전면 업데이트 (프로젝트 구조, API 명세, 카테고리, 테스트, 아키텍처 추가)
+docs/ai-log.md  ← 2026-02-13 로그 2건 추가 (폴더 구조 리팩토링, README 업데이트)
+```
+
+---
+
+### [2026-02-13] 주제: Docker 컨테이너화 및 AWS EC2 배포 준비
+
+#### 1. AI의 초기 제안
+- Multi-stage Dockerfile 작성 (빌드 스테이지 + 실행 스테이지)으로 이미지 크기 최소화
+- eclipse-temurin:17 기반 이미지 사용
+- application-prod.yaml로 운영 환경 설정 분리 (H2 콘솔 비활성화, Thymeleaf 캐시 활성화)
+
+#### 2. 개발자의 질문 / 수정 제안
+- t3.micro(1GB RAM) 환경에서 Docker 실행 가능 여부 확인 요청
+- Docker + JAR 직접 실행 두 가지 방법을 모두 준비할 것을 요청
+
+#### 3. 논의 과정
+1. Dockerfile 작성: Multi-stage 빌드 (JDK로 빌드 → JRE로 실행)
+2. .dockerignore 작성: .git, .idea, build, docs 등 불필요 파일 제외
+3. t3.micro 메모리 제약 논의:
+   - Spring Boot + H2 + Docker = 약 500~700MB 사용
+   - 1GB RAM에서는 빡빡하므로 스왑 메모리 2GB 추가 권장
+   - JVM 힙 메모리를 `-Xmx512m`으로 제한
+4. 배포 방식 결정: Docker + JAR 직접 실행 둘 다 준비
+5. application-prod.yaml 작성: H2 콘솔 비활성화, Thymeleaf 캐시 활성화
+6. README.md에 AWS EC2 배포 가이드 추가 (Docker 방식 + JAR 방식)
+
+#### 4. 최종 결론 및 적용 사유
+- **Multi-stage Dockerfile**: 빌드 시 JDK, 실행 시 JRE만 사용하여 이미지 크기 절감
+- **운영 프로파일 분리**: `application-prod.yaml`로 개발/운영 설정 분리 (보안 강화, 성능 최적화)
+- **t3.micro 대응**: 스왑 메모리 추가 + JVM 힙 제한(`-Xmx512m`)으로 안정적 운영
+- **이중 배포 옵션**: Docker가 문제될 경우 JAR 직접 실행으로 대체 가능
+
+#### 5. 적용된 코드
+```
+Dockerfile                                    ← Multi-stage 빌드 (JDK 17 → JRE 17)
+.dockerignore                                 ← 빌드 컨텍스트 최적화
+src/main/resources/application-prod.yaml      ← 운영 환경 설정 (H2 콘솔 OFF, 캐시 ON)
+README.md                                     ← AWS EC2 배포 가이드 추가 (Docker + JAR 방식)
+```
+
+---
+
+### [2026-02-13] 주제: GitHub Actions CI/CD 파이프라인 구축
+
+#### 1. AI의 초기 제안
+- GitHub Actions 워크플로우 2개 구성: CI(자동 빌드/테스트) + CD(수동 배포)
+- push 시 자동 빌드+테스트, 배포는 Actions 탭에서 수동 실행(workflow_dispatch)
+
+#### 2. 개발자의 질문 / 수정 제안
+- GitLab CI/CD처럼 페이지에서 직접 버튼을 눌러 배포할 수 있는지 확인 요청
+- GitHub Actions의 `workflow_dispatch` 트리거가 GitLab의 수동 파이프라인 실행과 동일한 역할임을 확인
+
+#### 3. 논의 과정
+1. GitLab CI/CD vs GitHub Actions 비교 (`.gitlab-ci.yml` vs `.github/workflows/*.yml`)
+2. CI 워크플로우 작성: push/PR 시 자동 빌드+테스트, 테스트 결과 아티팩트 업로드
+3. CD 워크플로우 작성: workflow_dispatch로 수동 트리거
+   - Gradle 빌드 → Docker 이미지 빌드 → `docker save`로 이미지 압축
+   - `appleboy/scp-action`으로 EC2에 이미지 전송
+   - `appleboy/ssh-action`으로 EC2에서 `docker load` → 기존 컨테이너 교체 → 새 컨테이너 실행
+4. GitHub Secrets 3개 필요: EC2_HOST, EC2_USERNAME, EC2_SSH_KEY
+5. README.md에 CI/CD 섹션 추가 (워크플로우 설명, 수동 배포 방법, Secrets 설정 가이드)
+
+#### 4. 최종 결론 및 적용 사유
+- **CI 워크플로우**: main 브랜치 push/PR 시 자동 실행, Gradle 빌드 + 26개 테스트 + 결과 아티팩트 업로드
+- **CD 워크플로우**: Actions 탭에서 "Run workflow" 버튼으로 수동 배포 (GitLab 수동 파이프라인과 동일 UX)
+- **배포 전략**: Docker 이미지를 GitHub Actions Runner에서 빌드 후 EC2로 전송 (EC2에서 빌드하지 않아 t3.micro 메모리 절약)
+- **무중단 배포**: 기존 컨테이너 stop/rm → 새 컨테이너 run (단순 교체 방식)
+
+#### 5. 적용된 코드
+```
+.github/workflows/ci.yml      ← CI 워크플로우 (push/PR → 빌드+테스트)
+.github/workflows/deploy.yml  ← CD 워크플로우 (수동 → Docker 빌드+EC2 배포)
+README.md                      ← CI/CD 섹션 추가 (워크플로우, Secrets 설정 가이드)
+```
+
+---
