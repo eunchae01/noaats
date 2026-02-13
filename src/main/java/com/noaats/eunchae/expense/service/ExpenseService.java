@@ -72,7 +72,7 @@ public class ExpenseService {
         List<Expense> expenses;
         if (category != null) {
             expenses = expenseRepository.findByExpenseDateBetweenAndCategory(
-                    startDate, endDate, Pageable.unpaged()).getContent();
+                    startDate, endDate, category, Pageable.unpaged()).getContent();
         } else {
             expenses = expenseRepository.findByExpenseDateBetween(
                     startDate, endDate, Pageable.unpaged()).getContent();
