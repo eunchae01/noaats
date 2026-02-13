@@ -85,22 +85,34 @@
             dateFormat: 'Y-m-d',
             allowInput: true,
             onReady: function(selectedDates, dateStr, instance) {
-                var wrapper = instance.calendarContainer.querySelector('.flatpickr-current-month .numInputWrapper');
+                var currentMonth = instance.calendarContainer.querySelector('.flatpickr-current-month');
+                if (!currentMonth) return;
+                var wrapper = currentMonth.querySelector('.numInputWrapper');
                 if (!wrapper) return;
+                // 기본 위아래 화살표 숨기기
                 var arrowUp = wrapper.querySelector('.arrowUp');
                 var arrowDown = wrapper.querySelector('.arrowDown');
-                if (!arrowUp || !arrowDown) return;
-                var newUp = arrowUp.cloneNode(true);
-                var newDown = arrowDown.cloneNode(true);
-                arrowUp.parentNode.replaceChild(newUp, arrowUp);
-                arrowDown.parentNode.replaceChild(newDown, arrowDown);
-                newUp.addEventListener('click', function() {
-                    instance.currentYear--;
-                    instance.redraw();
+                if (arrowUp) arrowUp.style.display = 'none';
+                if (arrowDown) arrowDown.style.display = 'none';
+                // ◀ 버튼 (연도 -1) - wrapper 앞에 삽입
+                var btnPrev = document.createElement('span');
+                btnPrev.className = 'year-nav year-nav-prev';
+                btnPrev.textContent = '◀';
+                currentMonth.insertBefore(btnPrev, wrapper);
+                // ▶ 버튼 (연도 +1) - wrapper 뒤에 삽입
+                var btnNext = document.createElement('span');
+                btnNext.className = 'year-nav year-nav-next';
+                btnNext.textContent = '▶';
+                wrapper.after(btnNext);
+                btnPrev.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    instance.changeYear(instance.currentYear - 1);
                 });
-                newDown.addEventListener('click', function() {
-                    instance.currentYear++;
-                    instance.redraw();
+                btnNext.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    instance.changeYear(instance.currentYear + 1);
                 });
             }
         });

@@ -439,18 +439,193 @@ input[type=number] {
   -moz-appearance: textfield;
 }
 
-/* ---- Flatpickr: Year before Month ---- */
+/* ---- Flatpickr 글라스모피즘 스타일 ---- */
+
+/* 달력 컨테이너 - 글라스 효과 */
+.flatpickr-calendar {
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 8px 32px rgba(27, 42, 74, 0.15), 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    overflow: hidden;
+}
+
+/* 헤더 영역 - 반투명 그라데이션 */
+.flatpickr-months {
+    background: linear-gradient(135deg, rgba(27, 42, 74, 0.9), rgba(74, 144, 217, 0.85));
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 16px 16px 0 0;
+    padding: 6px 0;
+}
+
+/* 월 이동 화살표 */
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    color: rgba(255, 255, 255, 0.85);
+    fill: rgba(255, 255, 255, 0.85);
+    transition: all 0.2s;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover,
+.flatpickr-months .flatpickr-next-month:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+    fill: rgba(255, 255, 255, 0.85);
+    transition: fill 0.2s;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: #fff;
+}
+
+/* 년-월 표시 순서 및 레이아웃 */
 .flatpickr-current-month {
     display: flex;
     align-items: center;
     justify-content: center;
-}
-
-.flatpickr-current-month .numInputWrapper {
-    order: -1;
-    margin-right: 4px;
+    color: #fff;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    padding: 0;
+    height: 100%;
 }
 
 .flatpickr-current-month .flatpickr-monthDropdown-months {
     order: 0;
+}
+
+/* 월 드롭다운 - 글라스 필 */
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    appearance: none;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.18);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    color: #fff;
+    padding: 3px 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+    border-color: rgba(255, 255, 255, 0.45);
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months option {
+    color: #333;
+    background: #fff;
+}
+
+/* 연도 입력 wrapper */
+.flatpickr-current-month .numInputWrapper {
+    order: -1;
+    margin-right: 0;
+}
+
+/* 연도 입력 */
+.flatpickr-current-month .numInputWrapper input.cur-year {
+    color: #fff;
+    font-weight: 600;
+}
+
+/* 요일 헤더 */
+.flatpickr-weekdays {
+    background: linear-gradient(135deg, rgba(27, 42, 74, 0.85), rgba(74, 144, 217, 0.8));
+    padding: 6px 0 4px;
+}
+
+span.flatpickr-weekday {
+    color: rgba(255, 255, 255, 0.75);
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* 날짜 본문 영역 */
+.flatpickr-innerContainer {
+    padding: 4px;
+}
+
+/* 날짜 셀 */
+.flatpickr-day {
+    border-radius: 10px;
+    transition: all 0.2s ease;
+    font-weight: 450;
+    color: #2c3e50;
+}
+
+.flatpickr-day:hover {
+    background: rgba(74, 144, 217, 0.1);
+    border-color: rgba(74, 144, 217, 0.2);
+}
+
+.flatpickr-day.today {
+    border: 2px solid var(--accent-color, #4A90D9);
+    color: var(--accent-color, #4A90D9);
+    font-weight: 700;
+    background: rgba(74, 144, 217, 0.06);
+}
+
+.flatpickr-day.today:hover {
+    background: var(--accent-color, #4A90D9);
+    color: #fff;
+    border-color: var(--accent-color, #4A90D9);
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.selected:hover {
+    background: linear-gradient(135deg, var(--accent-color, #4A90D9), #3a7bc8);
+    border-color: transparent;
+    color: #fff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(74, 144, 217, 0.35);
+}
+
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: #bcc5d1;
+}
+
+/* 연도 좌우 네비게이션 버튼 ◀ 2026 ▶ */
+.year-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    font-size: 8px;
+    padding: 2px 3px;
+    border-radius: 4px;
+    transition: all 0.2s;
+    user-select: none;
+}
+
+.year-nav:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.year-nav-prev {
+    order: -2;
+    margin-right: 2px;
+}
+
+.year-nav-next {
+    order: -1;
+    margin-right: 6px;
 }
