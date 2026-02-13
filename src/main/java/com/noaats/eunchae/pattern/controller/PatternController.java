@@ -4,6 +4,7 @@ import com.noaats.eunchae.expense.domain.ExpenseCategory;
 import com.noaats.eunchae.pattern.dto.CategoryChangeDto;
 import com.noaats.eunchae.expense.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,6 +14,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class PatternController {
@@ -21,6 +23,7 @@ public class PatternController {
 
     @GetMapping("/patterns")
     public String patterns(Model model) {
+        log.debug("GET /patterns - 소비 패턴 조회");
         String currentMonth = YearMonth.now().format(DateTimeFormatter.ofPattern("yyyy-MM"));
         String prevMonth = YearMonth.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyy-MM"));
 
@@ -51,6 +54,9 @@ public class PatternController {
         // 월 표시
         YearMonth prevYm = YearMonth.parse(prevMonth);
         YearMonth currentYm = YearMonth.parse(currentMonth);
+
+        log.debug("소비 패턴 데이터 로드 - 전월({}): {}, 이번달({}): {}",
+                prevMonth, prevTotal, currentMonth, currentTotal);
 
         model.addAttribute("changes", changes);
         model.addAttribute("totalChange", totalChange);

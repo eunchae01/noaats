@@ -5,6 +5,7 @@ import com.noaats.eunchae.pattern.dto.BudgetVsActual;
 import com.noaats.eunchae.expense.repository.ExpenseRepository;
 import com.noaats.eunchae.budget.service.BudgetService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
@@ -12,6 +13,7 @@ import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/expenses")
 @RequiredArgsConstructor
@@ -23,6 +25,7 @@ public class ChartApiController {
     // 카테고리별 지출 요약 (도넛 차트용)
     @GetMapping("/category-summary")
     public Map<String, Object> categorySummary(@RequestParam String yearMonth) {
+        log.debug("API - 카테고리 요약 조회, yearMonth: {}", yearMonth);
         List<Object[]> data = expenseRepository.sumByCategory(yearMonth);
 
         List<String> labels = new ArrayList<>();
@@ -43,6 +46,7 @@ public class ChartApiController {
     // 월별 총지출 (라인 차트용)
     @GetMapping("/monthly-summary")
     public Map<String, Object> monthlySummary(@RequestParam(defaultValue = "6") int months) {
+        log.debug("API - 월별 총지출 조회, months: {}", months);
         LocalDate startDate = YearMonth.now().minusMonths(months - 1).atDay(1);
         List<Object[]> data = expenseRepository.monthlyTotals(startDate);
 
@@ -63,6 +67,7 @@ public class ChartApiController {
     // 카테고리별 월별 지출 (누적 막대 차트용)
     @GetMapping("/category-trend")
     public Map<String, Object> categoryTrend(@RequestParam(defaultValue = "6") int months) {
+        log.debug("API - 카테고리 트렌드 조회, months: {}", months);
         LocalDate startDate = YearMonth.now().minusMonths(months - 1).atDay(1);
         List<Object[]> data = expenseRepository.categoryMonthlyTotals(startDate);
 
@@ -114,6 +119,7 @@ public class ChartApiController {
     // 예산 vs 실제 (가로 막대 차트용)
     @GetMapping("/budget-vs-actual")
     public Map<String, Object> budgetVsActual(@RequestParam String yearMonth) {
+        log.debug("API - 예산 vs 실제 조회, yearMonth: {}", yearMonth);
         List<BudgetVsActual> data = budgetService.getBudgetVsActual(yearMonth);
 
         List<String> labels = new ArrayList<>();

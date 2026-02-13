@@ -7,6 +7,7 @@ import com.noaats.eunchae.expense.dto.ExpenseUpdateRequest;
 import com.noaats.eunchae.expense.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -20,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.YearMonth;
 
+@Slf4j
 @Controller
 @RequestMapping("/expenses")
 @RequiredArgsConstructor
@@ -35,6 +37,8 @@ public class ExpenseController {
                        @RequestParam(required = false) ExpenseCategory category,
                        @RequestParam(defaultValue = "0") int page,
                        Model model) {
+        log.debug("GET /expenses - startDate: {}, endDate: {}, category: {}, page: {}",
+                startDate, endDate, category, page);
 
         // 기본값: 이번 달 1일 ~ 말일
         if (startDate == null || endDate == null) {
@@ -88,8 +92,10 @@ public class ExpenseController {
                          BindingResult bindingResult,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+        log.debug("POST /expenses - 지출 생성 요청");
 
         if (bindingResult.hasErrors()) {
+            log.debug("지출 생성 유효성 검증 실패 - errors: {}", bindingResult.getErrorCount());
             model.addAttribute("categories", ExpenseCategory.values());
             model.addAttribute("isEdit", false);
             model.addAttribute("pageTitle", "지출 추가");
@@ -135,8 +141,10 @@ public class ExpenseController {
                          BindingResult bindingResult,
                          Model model,
                          RedirectAttributes redirectAttributes) {
+        log.debug("POST /expenses/{} - 지출 수정 요청", id);
 
         if (bindingResult.hasErrors()) {
+            log.debug("지출 수정 유효성 검증 실패 - id: {}, errors: {}", id, bindingResult.getErrorCount());
             model.addAttribute("expenseId", id);
             model.addAttribute("categories", ExpenseCategory.values());
             model.addAttribute("isEdit", true);
@@ -154,6 +162,7 @@ public class ExpenseController {
     // 지출 삭제
     @PostMapping("/{id}/delete")
     public String delete(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+        log.debug("POST /expenses/{}/delete - 지출 삭제 요청", id);
         expenseService.delete(id);
         redirectAttributes.addFlashAttribute("message", "지출이 삭제되었습니다.");
         return "redirect:/expenses";

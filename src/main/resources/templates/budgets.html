@@ -101,9 +101,9 @@
                                 <thead>
                                     <tr>
                                         <th class="text-center">카테고리</th>
-                                        <th class="text-center" style="width: 140px;">예산</th>
+                                        <th class="text-center budget-col-amount">예산</th>
                                         <th class="text-end">지출</th>
-                                        <th class="text-center" style="width: 180px;">진행률</th>
+                                        <th class="text-center budget-col-progress d-none d-md-table-cell">진행률</th>
                                         <th class="text-end">잔여</th>
                                     </tr>
                                 </thead>
@@ -128,7 +128,7 @@
                                         </td>
                                         <td class="text-end amount"
                                             th:text="${#numbers.formatDecimal(bva.actualAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
-                                        <td>
+                                        <td class="d-none d-md-table-cell">
                                             <div class="d-flex align-items-center gap-2">
                                                 <div class="progress flex-grow-1">
                                                     <div class="progress-bar"

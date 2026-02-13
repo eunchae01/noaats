@@ -74,9 +74,9 @@
                             <th class="text-center">날짜</th>
                             <th class="text-center">카테고리</th>
                             <th class="text-center">설명</th>
-                            <th class="text-center">메모</th>
+                            <th class="text-center d-none d-md-table-cell">메모</th>
                             <th class="text-end">금액</th>
-                            <th class="text-center" style="width: 120px;">관리</th>
+                            <th class="text-center expense-col-action">관리</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -94,7 +94,7 @@
                                       th:text="${expense.category.displayName}"></span>
                             </td>
                             <td class="text-center" th:text="${expense.description}"></td>
-                            <td class="text-center text-muted small" th:text="${expense.memo}"></td>
+                            <td class="text-center text-muted small d-none d-md-table-cell" th:text="${expense.memo}"></td>
                             <td class="text-end amount"
                                 th:text="${#numbers.formatDecimal(expense.amount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                             <td class="text-center">

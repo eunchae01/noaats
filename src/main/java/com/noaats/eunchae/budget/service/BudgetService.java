@@ -7,12 +7,14 @@ import com.noaats.eunchae.dashboard.dto.DashboardSummary;
 import com.noaats.eunchae.budget.repository.BudgetRepository;
 import com.noaats.eunchae.expense.repository.ExpenseRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.*;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -23,6 +25,7 @@ public class BudgetService {
 
     // 대시보드 요약
     public DashboardSummary getDashboardSummary(String yearMonth) {
+        log.debug("대시보드 요약 조회 - yearMonth: {}", yearMonth);
         BigDecimal totalExpense = expenseRepository.sumByYearMonth(yearMonth);
         BigDecimal totalBudget = budgetRepository.findByYearMonth(yearMonth).stream()
                 .map(Budget::getAmount)
@@ -30,6 +33,8 @@ public class BudgetService {
         BigDecimal remaining = totalBudget.subtract(totalExpense);
         long count = expenseRepository.countByYearMonth(yearMonth);
 
+        log.debug("대시보드 요약 - 총지출: {}, 총예산: {}, 잔여: {}, 건수: {}",
+                totalExpense, totalBudget, remaining, count);
         return new DashboardSummary(totalExpense, totalBudget, remaining, count);
     }
 
@@ -69,6 +74,7 @@ public class BudgetService {
     // 예산 저장 (일괄)
     @Transactional
     public void saveBudgets(String yearMonth, Map<ExpenseCategory, BigDecimal> amounts) {
+        log.info("예산 일괄 저장 - yearMonth: {}, 카테고리 수: {}", yearMonth, amounts.size());
         for (Map.Entry<ExpenseCategory, BigDecimal> entry : amounts.entrySet()) {
             ExpenseCategory category = entry.getKey();
             BigDecimal amount = entry.getValue();
@@ -83,19 +89,23 @@ public class BudgetService {
 
             if (budget != null) {
                 budget.updateAmount(amount);
+                log.debug("예산 수정 - 카테고리: {}, 금액: {}", category, amount);
             } else {
                 budgetRepository.save(Budget.builder()
                         .category(category)
                         .amount(amount)
                         .yearMonth(yearMonth)
                         .build());
+                log.debug("예산 신규 등록 - 카테고리: {}, 금액: {}", category, amount);
             }
         }
+        log.info("예산 일괄 저장 완료 - yearMonth: {}", yearMonth);
     }
 
     // 지난달 예산 복사
     @Transactional
     public void copyFromPreviousMonth(String targetYearMonth) {
+        log.info("이전 달 예산 복사 시작 - targetYearMonth: {}", targetYearMonth);
         // 이전 월 계산
         int year = Integer.parseInt(targetYearMonth.substring(0, 4));
         int month = Integer.parseInt(targetYearMonth.substring(5, 7));
@@ -109,6 +119,7 @@ public class BudgetService {
 
         List<Budget> prevBudgets = budgetRepository.findByYearMonth(prevMonth);
         if (prevBudgets.isEmpty()) {
+            log.warn("이전 달 예산 없음 - prevMonth: {}", prevMonth);
             throw new IllegalArgumentException("이전 달(" + prevMonth + ") 예산이 없습니다.");
         }
 
@@ -117,5 +128,6 @@ public class BudgetService {
             amounts.put(b.getCategory(), b.getAmount());
         }
         saveBudgets(targetYearMonth, amounts);
+        log.info("이전 달 예산 복사 완료 - {} → {}", prevMonth, targetYearMonth);
     }
 }

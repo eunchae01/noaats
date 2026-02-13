@@ -498,3 +498,164 @@ README.md                                           ← SSL, Nginx 설정 가이
 ```
 
 ---
+
+### [2026-02-13] 주제: Flatpickr 연도 화살표 동작 버그 수정: instance.redraw() → instance.changeYear() API 사용
+
+#### 1. AI의 초기 제안
+- 이전 커밋에서 Flatpickr 달력 헤더의 연도 화살표(arrowUp/arrowDown)를 커스텀 이벤트 핸들러로 교체하는 코드를 작성
+- 기존 화살표를 `cloneNode(true)`로 복제하여 Flatpickr 기본 이벤트를 제거한 뒤, `instance.currentYear--`/`instance.currentYear++` 후 `instance.redraw()`를 호출하는 방식으로 구현
+
+#### 2. 개발자의 질문 / 수정 제안
+- 개발자가 연도 화살표를 클릭해도 연도가 변경되지 않는 문제를 보고
+- "달력 연도 움직이는 화살표 너가 수정했는데 안움직여"라는 버그 리포트 제출
+
+#### 3. 논의 과정
+1. 기존 코드 분석: `instance.currentYear--; instance.redraw()` 방식 사용 중
+2. 원인 파악: `redraw()`는 단순히 달력 UI를 다시 그리는 메서드로, `currentYear` 속성을 직접 변경한 것이 내부 상태에 반영되지 않음
+3. Flatpickr 공식 API 확인: `instance.changeYear(year)` 메서드가 내부 상태 업데이트와 UI 갱신을 모두 처리하는 올바른 방법
+4. 추가로 `e.stopPropagation()` 적용하여 클릭 이벤트가 부모 요소로 전파되어 Flatpickr 기본 동작과 충돌하는 것을 방지
+
+#### 4. 최종 결론 및 적용 사유
+- **`instance.redraw()` → `instance.changeYear()` 교체**: `redraw()`는 내부 날짜 상태를 갱신하지 않으므로, 공식 API인 `changeYear()`를 사용하여 연도 변경과 UI 갱신을 동시에 처리
+- **`e.stopPropagation()` 추가**: 클릭 이벤트 전파를 차단하여 Flatpickr 내부 이벤트 핸들러와의 충돌 방지
+- 기존 `cloneNode(true)` + `replaceChild` 패턴(기본 이벤트 제거 목적)은 유지
+
+#### 5. 적용된 코드
+```javascript
+// layout.html - Flatpickr onReady 콜백 (연도 화살표 커스텀 핸들러)
+newUp.addEventListener('click', function(e) {
+    e.stopPropagation();
+    instance.changeYear(instance.currentYear - 1);
+});
+newDown.addEventListener('click', function(e) {
+    e.stopPropagation();
+    instance.changeYear(instance.currentYear + 1);
+});
+```
+
+---
+
+### [2026-02-13] 주제: Flatpickr 달력 글래스모피즘 UI 개선 및 연도 좌우 화살표 전환
+
+#### 1. AI의 초기 제안
+- 기존 상하(▲▼) 화살표를 `cloneNode(true)`로 복제 후 `changeYear()` API를 호출하도록 수정
+- 기본 Flatpickr 스타일에 간단한 CSS 오버라이드만 적용
+
+#### 2. 개발자의 질문 / 수정 제안
+- `cloneNode` 방식으로도 화살표가 동작하지 않는 문제 보고 — Flatpickr가 `.arrowUp`/`.arrowDown` 클래스에 이벤트 위임을 사용하여 복제된 요소도 캡처됨
+- 상하 화살표 위치가 텍스트와 겹치는 문제, 리본 모양(▼ 위 / ▲ 아래)으로 뒤집히는 문제 지적
+- 달력 전체 디자인을 둥글고 세련되게 개선 요청 (글래스모피즘)
+- 월 드롭다운 화살표 아이콘 제거 요청 (화살표가 너무 많음)
+
+#### 3. 논의 과정
+1. 1차: `cloneNode` + `changeYear()` → Flatpickr 이벤트 위임으로 실패
+2. 2차: 새 요소 생성 + 다른 클래스명(`year-arrow`) + `flex-direction: column` → 위치 겹침 및 리본 모양 문제
+3. 3차: CSS `order` 속성으로 순서 교체 시도 → 캐시/렌더링 문제로 불안정
+4. **최종**: 상하 화살표를 완전히 폐기하고, `◀ 2026 ▶` 형태의 좌우 버튼으로 전환
+5. `numInputWrapper` 바깥 `flatpickr-current-month`에 직접 삽입하여 Flatpickr 내부 이벤트와 완전 분리
+6. 글래스모피즘 디자인 전면 적용: `backdrop-filter: blur()`, 반투명 배경, 그라데이션 헤더, 둥근 날짜 셀
+7. `.flatpickr-current-month`의 기본 `padding-top: 7.48px` 제거로 세로 정렬 보정
+
+#### 4. 최종 결론 및 적용 사유
+- **◀ ▶ 좌우 버튼 방식 채택**: Flatpickr의 `.arrowUp`/`.arrowDown` 이벤트 위임과 완전히 분리되어 안정적으로 동작
+- **글래스모피즘 스타일 적용**: 기존 기본 스타일 대비 시각적 일관성과 완성도 향상
+- **월 드롭다운 화살표 제거**: `appearance: none` + background-image 없음으로 깔끔한 글래스 필 스타일
+
+#### 5. 적용된 코드
+```javascript
+// layout.html - Flatpickr onReady 콜백 (◀ ▶ 연도 좌우 버튼)
+var arrowUp = wrapper.querySelector('.arrowUp');
+var arrowDown = wrapper.querySelector('.arrowDown');
+if (arrowUp) arrowUp.style.display = 'none';
+if (arrowDown) arrowDown.style.display = 'none';
+
+var btnPrev = document.createElement('span');
+btnPrev.className = 'year-nav year-nav-prev';
+btnPrev.textContent = '◀';
+currentMonth.insertBefore(btnPrev, wrapper);
+
+var btnNext = document.createElement('span');
+btnNext.className = 'year-nav year-nav-next';
+btnNext.textContent = '▶';
+wrapper.after(btnNext);
+
+btnPrev.addEventListener('click', function(e) {
+    e.preventDefault(); e.stopPropagation();
+    instance.changeYear(instance.currentYear - 1);
+});
+btnNext.addEventListener('click', function(e) {
+    e.preventDefault(); e.stopPropagation();
+    instance.changeYear(instance.currentYear + 1);
+});
+```
+```css
+/* style.css - 글래스모피즘 달력 (주요 부분) */
+.flatpickr-calendar { border-radius: 16px; backdrop-filter: blur(12px); }
+.flatpickr-months { background: linear-gradient(135deg, #4A90D9, #6FB1FC); border-radius: 16px 16px 0 0; }
+.flatpickr-monthDropdown-months { appearance: none; background: rgba(255,255,255,0.2); border-radius: 20px; }
+.year-nav { cursor: pointer; font-size: 8px; opacity: 0.85; }
+```
+
+---
+
+### [2026-02-13] 주제: 전체 페이지 테이블 반응형 처리 — 모바일 컬럼 숨김 및 축소
+
+#### 1. AI의 초기 제안
+- 예산 관리 페이지에서 고정 `style="width: 140px"` / `style="width: 180px"`을 CSS 클래스로 대체
+- 진행률 컬럼에 `d-none d-md-table-cell` 적용하여 768px 이하에서 숨김
+- `@media (max-width: 768px)` 블록에 테이블 셀 패딩/폰트 축소, input `min-width` 보장 추가
+
+#### 2. 개발자의 질문 / 수정 제안
+- "다른 페이지 테이블에도 동일하게 반응형으로 ㄱㄱ" — 전체 페이지로 확대 적용 요청
+
+#### 3. 논의 과정
+1. 각 페이지별 테이블 구조 분석:
+   - **지출 관리** (6컬럼): 날짜, 카테고리, 설명, 메모, 금액, 관리 → 메모 컬럼이 모바일에서 불필요
+   - **대시보드** (4컬럼): 날짜, 카테고리, 설명, 금액 → 초소형에서 설명 숨김
+   - **소비 패턴** (5컬럼): 카테고리, 전월, 이번달, 변화, 추이 → 변화(금액) 컬럼 숨기고 추이(%)만 표시
+   - **예산 관리** (5컬럼): 기존 작업 완료 — 진행률 숨김
+2. Bootstrap 반응형 유틸리티 클래스 활용: `d-none d-md-table-cell` (768px), `d-none d-sm-table-cell` (576px)
+3. 인라인 `style="width:"` 제거 → CSS 클래스 `.budget-col-amount`, `.expense-col-action` 등으로 대체
+4. 480px 이하 초소형 화면 미디어쿼리 별도 추가
+
+#### 4. 최종 결론 및 적용 사유
+- **페이지별 우선순위 낮은 컬럼 숨김**: 핵심 정보(카테고리, 금액)는 항상 표시하되, 보조 정보(메모, 설명, 변화금액, 진행률)를 좁은 화면에서 숨겨 가독성 확보
+- **768px + 480px 2단계 반응형**: 일반 모바일(768px)에서는 컬럼 숨김 + 폰트/패딩 축소, 초소형(480px)에서는 더 공격적 축소
+- **대시보드 헤더에 `flex-wrap gap-2` 추가**: 좁은 화면에서 월 선택기가 줄바꿈되도록
+- **소비 패턴 헤더 텍스트 간소화**: `전월 (2026년 1월)` → `전월`으로 변경하여 모바일 너비 절약
+
+#### 5. 적용된 코드
+```html
+<!-- budgets.html: 진행률 컬럼 숨김 -->
+<th class="text-center budget-col-progress d-none d-md-table-cell">진행률</th>
+<td class="d-none d-md-table-cell">...</td>
+
+<!-- expenses/list.html: 메모 컬럼 숨김 -->
+<th class="text-center d-none d-md-table-cell">메모</th>
+<td class="text-center text-muted small d-none d-md-table-cell" th:text="${expense.memo}"></td>
+
+<!-- dashboard.html: 설명 컬럼 숨김 -->
+<th class="text-center d-none d-sm-table-cell">설명</th>
+<td class="text-center d-none d-sm-table-cell" th:text="${expense.description}"></td>
+
+<!-- patterns.html: 변화 컬럼 숨김 -->
+<th class="text-end d-none d-sm-table-cell">변화</th>
+<td class="text-end amount d-none d-sm-table-cell">...</td>
+```
+```css
+/* style.css - 반응형 추가 (주요 부분) */
+@media (max-width: 768px) {
+    .page-header { text-align: center; justify-content: center !important; }
+    .table tbody td, .table thead th { padding: 0.5rem 0.4rem; font-size: 0.85rem; }
+    .table .form-control-sm { font-size: 0.8rem; min-width: 80px; }
+    .table .amount { font-size: 0.8rem; white-space: nowrap; }
+    .chart-container { height: 250px !important; }
+}
+@media (max-width: 480px) {
+    .table tbody td, .table thead th { padding: 0.4rem 0.25rem; font-size: 0.78rem; }
+    .summary-card .summary-value { font-size: 1rem; }
+    .page-header h2 { font-size: 1.25rem; }
+}
+```
+
+---

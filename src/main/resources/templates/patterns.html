@@ -44,9 +44,9 @@
                     <thead>
                         <tr>
                             <th class="text-center">카테고리</th>
-                            <th class="text-end" th:text="'전월 (' + ${prevDisplay} + ')'">전월</th>
-                            <th class="text-end" th:text="'이번달 (' + ${currentDisplay} + ')'">이번달</th>
-                            <th class="text-end">변화</th>
+                            <th class="text-end">전월</th>
+                            <th class="text-end">이번달</th>
+                            <th class="text-end d-none d-sm-table-cell">변화</th>
                             <th class="text-center">추이</th>
                         </tr>
                     </thead>
@@ -75,7 +75,7 @@
                                 th:text="${#numbers.formatDecimal(c.prevAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                             <td class="text-end amount"
                                 th:text="${#numbers.formatDecimal(c.currentAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
-                            <td class="text-end amount"
+                            <td class="text-end amount d-none d-sm-table-cell"
                                 th:classappend="${c.increase} ? 'amount-negative' : (${c.decrease} ? 'amount-positive' : '')"
                                 th:text="${(c.increase ? '+' : '') + #numbers.formatDecimal(c.change, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                             <td class="text-center">
@@ -100,7 +100,7 @@
                                 th:text="${#numbers.formatDecimal(totalChange.prevAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                             <td class="text-end amount"
                                 th:text="${#numbers.formatDecimal(totalChange.currentAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
-                            <td class="text-end amount"
+                            <td class="text-end amount d-none d-sm-table-cell"
                                 th:classappend="${totalChange.increase} ? 'amount-negative' : (${totalChange.decrease} ? 'amount-positive' : '')"
                                 th:text="${(totalChange.increase ? '+' : '') + #numbers.formatDecimal(totalChange.change, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                             <td class="text-center">
