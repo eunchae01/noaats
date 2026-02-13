@@ -71,18 +71,18 @@
                 <table class="table table-hover mb-0">
                     <thead>
                         <tr>
-                            <th>날짜</th>
-                            <th>카테고리</th>
-                            <th>설명</th>
-                            <th>메모</th>
+                            <th class="text-center">날짜</th>
+                            <th class="text-center">카테고리</th>
+                            <th class="text-center">설명</th>
+                            <th class="text-center">메모</th>
                             <th class="text-end">금액</th>
                             <th class="text-center" style="width: 120px;">관리</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="expense : ${expenses.content}">
-                            <td th:text="${#temporals.format(expense.expenseDate, 'yyyy-MM-dd')}"></td>
-                            <td>
+                            <td class="text-center" th:text="${#temporals.format(expense.expenseDate, 'yyyy-MM-dd')}"></td>
+                            <td class="text-center">
                                 <span class="badge badge-category"
                                       th:classappend="'badge-' + ${expense.category.name().toLowerCase() == 'food' ? 'food' :
                                                      expense.category.name().toLowerCase() == 'transport' ? 'transport' :
@@ -93,8 +93,8 @@
                                                      expense.category.name().toLowerCase() == 'education' ? 'education' : 'other'}"
                                       th:text="${expense.category.displayName}"></span>
                             </td>
-                            <td th:text="${expense.description}"></td>
-                            <td class="text-muted small" th:text="${expense.memo}"></td>
+                            <td class="text-center" th:text="${expense.description}"></td>
+                            <td class="text-center text-muted small" th:text="${expense.memo}"></td>
                             <td class="text-end amount"
                                 th:text="${#numbers.formatDecimal(expense.amount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                             <td class="text-center">

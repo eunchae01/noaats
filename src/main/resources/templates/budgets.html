@@ -100,16 +100,16 @@
                             <table class="table mb-0">
                                 <thead>
                                     <tr>
-                                        <th>카테고리</th>
-                                        <th style="width: 140px;">예산</th>
+                                        <th class="text-center">카테고리</th>
+                                        <th class="text-center" style="width: 140px;">예산</th>
                                         <th class="text-end">지출</th>
-                                        <th style="width: 180px;">진행률</th>
+                                        <th class="text-center" style="width: 180px;">진행률</th>
                                         <th class="text-end">잔여</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr th:each="bva : ${budgetList}">
-                                        <td>
+                                        <td class="text-center">
                                             <span class="badge badge-category"
                                                   th:classappend="'badge-' + ${bva.category.name().toLowerCase() == 'food' ? 'food' :
                                                                  bva.category.name().toLowerCase() == 'transport' ? 'transport' :

@@ -43,7 +43,7 @@
                 <table class="table mb-0">
                     <thead>
                         <tr>
-                            <th>카테고리</th>
+                            <th class="text-center">카테고리</th>
                             <th class="text-end" th:text="'전월 (' + ${prevDisplay} + ')'">전월</th>
                             <th class="text-end" th:text="'이번달 (' + ${currentDisplay} + ')'">이번달</th>
                             <th class="text-end">변화</th>
@@ -60,7 +60,7 @@
                             </td>
                         </tr>
                         <tr th:each="c : ${changes}">
-                            <td>
+                            <td class="text-center">
                                 <span class="badge badge-category"
                                       th:classappend="'badge-' + ${c.category.name().toLowerCase() == 'food' ? 'food' :
                                                      c.category.name().toLowerCase() == 'transport' ? 'transport' :
@@ -95,7 +95,7 @@
                         </tr>
                         <!-- Total Row -->
                         <tr class="table-active fw-bold">
-                            <td>합계</td>
+                            <td class="text-center">합계</td>
                             <td class="text-end amount"
                                 th:text="${#numbers.formatDecimal(totalChange.prevAmount, 0, 'COMMA', 0, 'POINT')} + '원'"></td>
                             <td class="text-end amount"
