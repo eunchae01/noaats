@@ -7,7 +7,7 @@
     <property name="LOG_DIR" value="./logs"/>
     <property name="LOG_FILE" value="budget-app"/>
     <property name="CONSOLE_PATTERN"
-              value="%d{HH:mm:ss.SSS} %clr(%-5level) %clr([%15.15thread]){magenta} %clr(%-40.40logger{39}){cyan} : %msg%n"/>
+              value="%d{HH:mm:ss.SSS} %-5level [%15.15thread] %-40.40logger{39} : %msg%n"/>
     <property name="FILE_PATTERN"
               value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%thread] %logger{50} - %msg%n"/>
 
