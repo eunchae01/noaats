@@ -438,3 +438,19 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+/* ---- Flatpickr: Year before Month ---- */
+.flatpickr-current-month {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.flatpickr-current-month .numInputWrapper {
+    order: -1;
+    margin-right: 4px;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months {
+    order: 0;
+}
